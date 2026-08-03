@@ -8,3 +8,11 @@ __pycache__/
 
 # CSVs baixados para teste local
 *.csv
+
+# Arquivos temporários da geração de relatórios (aba Relatórios / Routine diária)
+# OBS.: build/relatorios.json NÃO é ignorado — ele é versionado (contém os
+# briefings do Gestor lidos pelo build).
+build/relatorios_metrics.json
+build/_meta_tmp.csv
+build/_sales_tmp.csv
+*.xlsx

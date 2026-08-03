@@ -165,11 +165,31 @@ build/app.js               # lógica + renderização (gráficos/heatmap leem as
 .github/workflows/deploy-worker.yml  # publica o Worker da IA Insights (Cloudflare)
 ia-worker/worker.js    # backend da aba IA Insights (ENGINE — não editar por cliente)
 ia-worker/wrangler.toml # nome do Worker (larissa-codigodarainha-ia-insights)
+build/relatorios.json  # briefings do Gestor por período (aba Relatórios) — VERSIONADO
+build/gerar_relatorios.py # calcula as métricas por período (usado pela Routine diária)
+build/GUIA-RELATORIOS.md  # passo a passo da Routine que regenera os briefings
 dist/index.html        # saída gerada (gitignored; o Actions reconstrói)
 GUIA-REPLICACAO.md     # engine explicada + solução dos problemas de publicação
 SETUP-CRON.md          # valores do cron-job.org (owner/repo já preenchidos)
 SETUP-IA.md            # passo a passo da aba IA Insights
 ```
+
+### Aba Relatórios (relatórios automáticos do funil)
+Aba entre **Meta Ads** e **IA Insights**. Reaproveita os filtros de data da topbar
+e os dados já embutidos (`meta[]`/`sales[]`) — tudo calculado no navegador (custo
+zero): cards **Visão Geral Total** (todas as vendas) e **Tráfego** (só Meta Ads),
+tabela diária resumida (Total | Ads), visão por campanha, **Top 5 / Piores 5
+anúncios** (com link do criativo via coluna *Creative Instagram Permalink* →
+`ad_links`). **Código de cor** (vermelho/amarelo/verde/ciano) só em **CAC** e
+**ROAS**, conforme `CAC_TARGET`/`ROAS_TARGET` em `build.py` (desempenho =
+ROAS `valor/meta`, CAC `meta/valor`).
+
+O **Briefing do Gestor** (texto interpretativo por período) é **pré-gerado por IA**
+e lido de `build/relatorios.json` — **sem chamada de API no navegador nem créditos
+da Anthropic**. É regenerado **1×/dia às 7h (BRT)** por uma **Routine do Claude
+Code** que roda `build/gerar_relatorios.py` (só matemática) e redige os textos
+seguindo `build/GUIA-RELATORIOS.md`, commitando o JSON. Se o JSON não existir, a
+aba mostra tudo menos o briefing (cards/tabelas seguem funcionando).
 
 O `build.py` **não agrega**: exporta as linhas cruas e toda a lógica (filtros, KPIs,
 tabelas, gráficos, heatmap, imposto, tema) roda no navegador.

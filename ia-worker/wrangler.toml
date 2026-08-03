@@ -1,0 +1,10 @@
+name = "<<PREENCHER: nome do worker, ex. nomecliente-ia-insights>>"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Secrets (NÃO ficam aqui — configure via GitHub Secrets, que o workflow
+# .github/workflows/deploy-worker.yml reaplica a cada deploy):
+#   ANTHROPIC_API_KEY
+#   INSIGHTS_PASSWORD
+# Alternativa manual (sem GitHub Actions): `wrangler secret put ANTHROPIC_API_KEY`
+# e `wrangler secret put INSIGHTS_PASSWORD` — ver SETUP-IA.md.

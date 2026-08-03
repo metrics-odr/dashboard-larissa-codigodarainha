@@ -1,0 +1,36 @@
+name: Deploy IA Worker (Cloudflare)
+
+# Publica o Worker da aba "IA Insights" sempre que ia-worker/** mudar na main,
+# ou manualmente via workflow_dispatch. O runner do GitHub alcança a API da
+# Cloudflare (o sandbox do agente nao alcança) — por isso o deploy roda aqui.
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - "ia-worker/**"
+      - ".github/workflows/deploy-worker.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Worker via Wrangler (e reaplica os secrets a cada deploy)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ia-worker
+          command: deploy
+          secrets: |
+            ANTHROPIC_API_KEY
+            INSIGHTS_PASSWORD
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          INSIGHTS_PASSWORD: ${{ secrets.INSIGHTS_PASSWORD }}

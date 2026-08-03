@@ -211,11 +211,12 @@ def process(meta_rows, sales_rows):
     )
 
     meta = []
-    # (campanha normalizada, anúncio normalizado) que existem no Meta — usado para
-    # confirmar se uma venda tem match confiável. Precisa incluir a campanha porque
-    # o mesmo nome de anúncio (ex. "AD01") se repete em campanhas diferentes; casar
-    # só pelo nome do anúncio atribuiria a venda à campanha errada.
-    ad_set = set()
+    # (campanha, anúncio) normalizados -> (campanha, conjunto) reais do Meta.
+    # A chave inclui a CAMPANHA porque o mesmo nome de anúncio (ex. "AD01") se
+    # repete em campanhas diferentes; casar só pelo nome do anúncio atribuiria a
+    # venda à campanha errada (era o caso da campanha "Bidcap"). Guardar os nomes
+    # do Meta também alinha a venda à mesma linha do gasto nas tabelas.
+    ad_map = {}
     for row in meta_rows[1:]:
         if not any((c or "").strip() for c in row):
             continue
@@ -224,7 +225,9 @@ def process(meta_rows, sales_rows):
         camp = cell(row, midx["campaign"]) or "(sem campanha)"
         adset = cell(row, midx["adset"]) or "(sem conjunto)"
         ad = cell(row, midx["ad"]) or "(sem anúncio)"
-        ad_set.add((norm(camp), norm(ad)))
+        key = (norm(camp), norm(ad))
+        if key not in ad_map:
+            ad_map[key] = (camp, adset)
         meta.append({
             "d": parse_date(cell(row, midx["day"])),
             "camp": camp, "adset": adset, "ad": ad,
@@ -249,7 +252,6 @@ def process(meta_rows, sales_rows):
          # por isso "faturamento" vem ANTES de "valor" nos aliases.
          "val": ["faturamento", "valor da venda", "valor", "value", "amount"],
          "utm_content": ["utm content", "utm_content"],
-         "utm_term": ["utm term", "utm_term"],
          "utm_campaign": ["utm campaign", "utm_campaign"],
          "utm_medium": ["utm medium", "utm_medium"],
          "status": ["status"]},
@@ -270,22 +272,28 @@ def process(meta_rows, sales_rows):
         if not COUNT_ALL_AS_PAID and not is_paid(cell(row, sidx["status"])):
             continue
         prod = cell(row, sidx["prod"])
-        # O identificador real do anúncio no Meta vem do UTM Term (ex. "AD01"); UTM
-        # Content carrega o posicionamento (Instagram_Reels/Feed/Stories, etc.), não
-        # o anúncio — casar por ele nunca bate com o Ad Name do Meta.
-        ad = cell(row, sidx["utm_term"]) or cell(row, sidx["utm_content"]) or "(sem anúncio)"
-        camp = cell(row, sidx["utm_campaign"]) or "(sem campanha)"
-        adset = cell(row, sidx["utm_medium"]) or "(sem conjunto)"
+        # O identificador do anúncio no Meta (Ad Name = "AD01", "AD02"...) vem do
+        # UTM Content. O UTM Term carrega o POSICIONAMENTO (Instagram_Reels/Feed/
+        # Stories), não o anúncio — por isso o match é pelo UTM Content.
+        ad = cell(row, sidx["utm_content"]) or "(sem anúncio)"
+        sale_camp = cell(row, sidx["utm_campaign"]) or "(sem campanha)"
         main = is_main_product(prod)
-        # Match com o Meta = campanha + anúncio juntos (nomes de anúncio se repetem
-        # entre campanhas diferentes, então casar só pelo nome do anúncio atribuiria
-        # a venda à campanha errada).
-        meta_match = (norm(camp), norm(ad)) in ad_set
-        # Atribuição ao tráfego rastreado: produto principal OU anúncio que existe
-        # no Meta (captura orderbumps/upsells que carregam a UTM do anúncio).
-        attributed = main or meta_match
+        # Match com o Meta = campanha + anúncio juntos (o mesmo Ad Name se repete
+        # entre campanhas; casar só pelo anúncio atribui a venda à campanha errada).
+        meta_key = (norm(sale_camp), norm(ad))
+        meta_hit = ad_map.get(meta_key)
+        # Atribuição ao tráfego rastreado: produto principal OU par campanha+anúncio
+        # que existe no Meta (captura orderbumps/upsells que carregam a UTM do anúncio).
+        attributed = main or (meta_hit is not None)
         if not attributed:
             continue
+        # Quando casa com o Meta, usa a campanha/conjunto REAIS do Meta (mantém a
+        # venda na mesma linha do gasto nas tabelas). Senão, usa as UTMs da venda.
+        if meta_hit is not None:
+            camp, adset = meta_hit
+        else:
+            camp = sale_camp
+            adset = cell(row, sidx["utm_medium"]) or "(sem conjunto)"
         sales.append({
             "d": parse_date(cell(row, sidx["created"])),
             "camp": camp, "adset": adset, "ad": ad,
@@ -295,7 +303,7 @@ def process(meta_rows, sales_rows):
             # meta=1 quando a venda casa com campanha+anúncio real do Meta (tráfego
             # pago). Vendas do produto principal sem esse match (orgânico/direto, ou
             # UTM sem anúncio identificável) têm meta=0.
-            "meta": 1 if meta_match else 0,
+            "meta": 1 if meta_hit is not None else 0,
             "nm": first_last_initial(cell(row, sidx["name"])),
             "em": mask_email(cell(row, sidx["email"])),
         })

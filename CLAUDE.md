@@ -92,11 +92,11 @@ na mesma planilha; leitura via export CSV).
   `Pagamento` é a bandeira do cartão. Como é lista de compradores, `COUNT_ALL_AS_PAID = True`
   conta todas as linhas como venda paga.
 - **Produto** = `Código da Rainha` (prefixo `codigo da rainha`).
-- **O identificador do anúncio vem do `UTM Term`** (ex. `AD01`), **não** do `UTM Content`
-  (que carrega o posicionamento: `Instagram_Reels`/`Instagram_Feed`/`Instagram_Stories`/
-  `Facebook_Mobile_Feed`). Validado direto na API do Meta: o campo `Ad Name` real é
-  `AD01`, `AD02`... igual ao `UTM Term`. Confirmado em 2026-08-03 após relato de venda
-  não aparecendo na aba Meta Ads (`build.py` usava `UTM Content` — corrigido).
+- **O identificador do anúncio vem do `UTM Content`** (ex. `AD01`, `AD02`...), igual ao
+  campo `Ad Name` real do Meta (validado na API). O `UTM Term` carrega o **posicionamento**
+  (`Instagram_Reels`/`Instagram_Feed`/`Instagram_Stories`/`Facebook_Mobile_Feed`), **não** o
+  nome do anúncio. O match Meta↔venda é pela combinação **`UTM Campaign` + `UTM Content`**
+  (ver "atribuição" abaixo). Confirmado em 2026-08-03.
 
 URL de export CSV: `https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>`
 
@@ -112,11 +112,14 @@ ConvCHK (Vendas/Checkouts) · Faturamento · ROAS (Faturamento/Gasto) · Ticket 
   **Vendas / CAC / ConvCHK / Ticket**.
 - **Faturamento / ROAS** = soma de **todos os produtos** do funil (orderbumps/upsells).
 - Uma venda entra no funil se: é o produto principal **OU** a combinação **`UTM Campaign`
-  + `UTM Term`** (campanha + anúncio) casa com uma linha real do Meta (captura
+  + `UTM Content`** (campanha + anúncio) casa com uma linha real do Meta (captura
   orderbumps/upsells que carregam a UTM do anúncio). O match exige campanha **e**
   anúncio juntos — nomes de anúncio (`AD01`, `AD02`...) se repetem entre campanhas
-  diferentes, então casar só pelo nome do anúncio atribuiria a venda à campanha errada.
-  Vendas de outros funis (UTM/produto não relacionados) ficam de fora. Só conta status pago.
+  diferentes, então casar só pelo nome do anúncio atribuiria a venda à campanha errada
+  (era o caso da campanha "Bidcap", que recebia vendas de outras campanhas). Quando casa,
+  a venda herda a campanha/conjunto **reais do Meta** (fica na mesma linha do gasto nas
+  tabelas). Vendas de outros funis (UTM/produto não relacionados) ficam de fora. Só conta
+  status pago.
 - Se não houver coluna de Receita, não há Receita/ROAS R/Ticket R — ajuste o texto
   desta seção se o cliente novo tiver uma regra diferente.
 
@@ -124,11 +127,12 @@ ConvCHK (Vendas/Checkouts) · Faturamento · ROAS (Faturamento/Gasto) · Ticket 
 Toggle ON aplica o `TAX_FACTOR` (definido em `build.py`) sobre os custos do Meta.
 
 ### Convenções de campanha
-`Campaign Name = utm_campaign`, `Ad Set Name = utm_medium`, `Ad Name = utm_term`
-(⚠️ não `utm_content` — essa coluna carrega o posicionamento do anúncio, não o
-nome dele). Campanha e conjunto de uma venda vêm diretamente do `utm_campaign`/
-`utm_medium` da própria linha; o match com o Meta (campo `meta`, usado pela aba
-Meta Ads) exige `utm_campaign`+`utm_term` batendo com uma linha real do Meta.
+`Campaign Name = utm_campaign`, `Ad Set Name = utm_medium`, `Ad Name = utm_content`
+(⚠️ **não** `utm_term` — essa coluna carrega o **posicionamento** do anúncio
+`Instagram_Reels`/`Feed`/`Stories`, não o nome dele). O match com o Meta (campo `meta`,
+usado pela aba Meta Ads) exige `utm_campaign`+`utm_content` batendo com uma linha real do
+Meta; quando casa, a venda herda a campanha/conjunto reais do Meta (para o gasto e a venda
+caírem na mesma linha das tabelas).
 
 ## IA Insights
 
@@ -189,12 +193,12 @@ Teste local:
    persistência é no Worker (KV) — ver seção "IA Insights" acima; confirme que
    `IA_WORKER_URL` está preenchido em `build.py` e que o log do deploy do Worker
    não mostrou o aviso de KV sem permissão.
-8. **Venda não aparece na aba Meta Ads apesar de existir na planilha:** confira se
-   o `build.py` está casando pelo campo certo — o identificador do anúncio real do
-   Meta costuma vir do `UTM Term` (`AD01`, `AD02`...), não do `UTM Content`
-   (posicionamento: `Instagram_Reels`/`Feed`/`Stories`). Verifique direto na API/
-   painel do Meta o valor real do campo `Ad Name` de um anúncio recente e compare
-   com as colunas UTM da planilha antes de mudar o alias. Também importante: nomes
-   de anúncio se repetem entre campanhas diferentes — o match precisa ser
-   campanha+anúncio juntos (não só o nome do anúncio), senão a venda é atribuída à
-   campanha errada em vez de simplesmente não aparecer.
+8. **Venda não aparece na aba Meta Ads (ou aparece na campanha errada):** o
+   identificador do anúncio real do Meta (`Ad Name` = `AD01`, `AD02`...) vem do
+   **`UTM Content`** desta planilha — o `UTM Term` carrega o **posicionamento**
+   (`Instagram_Reels`/`Feed`/`Stories`). Casar pelo `UTM Term` zera as atribuições
+   (não bate com o `Ad Name`). Além disso, nomes de anúncio se repetem entre campanhas
+   diferentes — o match precisa ser **campanha+anúncio juntos** (`UTM Campaign`+`UTM
+   Content`), senão a venda é atribuída à campanha errada (ex.: caía na "Bidcap").
+   Confira o valor real do `Ad Name` na API/painel do Meta e compare com as colunas
+   UTM antes de mexer no alias.

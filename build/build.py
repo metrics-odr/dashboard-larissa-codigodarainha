@@ -334,8 +334,21 @@ def process(meta_rows, sales_rows):
 # Render
 # --------------------------------------------------------------------------- #
 def render(data, template_path):
+    # A dashboard é montada a partir de arquivos separados (visual x lógica):
+    #   template.html          -> esqueleto HTML (com placeholders __STYLES__/__APP_JS__)
+    #   identidade-visual.css  -> TODAS as cores (edite aqui p/ mexer só em cor)
+    #   estilos.css            -> layout/componentes
+    #   app.js                 -> lógica + renderização
+    # Esta função só COSTURA os arquivos e injeta os dados; não altera nada deles.
+    base = os.path.dirname(os.path.abspath(template_path))
+    def readf(name):
+        with open(os.path.join(base, name), "r", encoding="utf-8") as f:
+            return f.read()
     with open(template_path, "r", encoding="utf-8") as f:
         tpl = f.read()
+    styles = readf("identidade-visual.css") + "\n" + readf("estilos.css")
+    tpl = tpl.replace("__STYLES__", styles)
+    tpl = tpl.replace("__APP_JS__", readf("app.js"))
     tpl = tpl.replace("__DATA_JSON__", json.dumps(data, ensure_ascii=False))
     tpl = tpl.replace("__BUILD_ID__", data["build"]["build_id"])
     tpl = tpl.replace("__GENERATED_BRT__", data["build"]["generated_at_brt"])

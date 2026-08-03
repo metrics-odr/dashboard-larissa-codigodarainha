@@ -152,9 +152,15 @@ antigo, sem quebrar o deploy) e avisa no log do Actions.
 
 ## Arquitetura / arquivos
 
+A dashboard é montada a partir de **arquivos separados** (visual x lógica), costurados
+pelo `build.py` no `render()` — assim dá para mexer só em cor/layout sem tocar na lógica:
+
 ```
-build/build.py        # lê os 2 CSVs (read-only), emite REGISTROS BRUTOS (meta[]/sales[]) no HTML
-build/template.html   # o app inteiro: CSS + JS (ENGINE — não editar por cliente)
+build/build.py             # lê os 2 CSVs (read-only), emite meta[]/sales[] e COSTURA os arquivos abaixo
+build/template.html        # esqueleto HTML (placeholders __STYLES__ / __APP_JS__ / __DATA_JSON__)
+build/identidade-visual.css # ⭐ TODAS as cores (temas claro/escuro, paleta de gráficos, heatmap). Edite AQUI p/ mexer só em cor.
+build/estilos.css          # layout/componentes (CSS não-cor)
+build/app.js               # lógica + renderização (gráficos/heatmap leem as cores via CSS vars)
 .github/workflows/deploy.yml         # roda build.py e publica no Pages
 .github/workflows/deploy-worker.yml  # publica o Worker da IA Insights (Cloudflare)
 ia-worker/worker.js    # backend da aba IA Insights (ENGINE — não editar por cliente)

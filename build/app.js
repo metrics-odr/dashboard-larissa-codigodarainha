@@ -423,6 +423,118 @@ function renderMeta(){
     rows:rows.map((s,i)=>({k:'s'+i, cells:{d:s.d,nm:s.nm,prod:s.prod,val:s.val,camp:s.camp,ad:s.ad,em:s.em}}))});
 }
 
+/* ---------------- PAGE: Relatórios ----------------
+   Reaproveita os mesmos dados/filtros das outras abas (metaActive/salesActive).
+   Total  = todas as vendas do funil.  Tráfego = só Meta Ads (s.meta).
+   Código de cor aplicado APENAS a CAC e ROAS (metas em build.py). */
+const CAC_TARGET=B.cac_target, ROAS_TARGET=B.roas_target;
+const REL_BAND_LO=(B.report_band_low!=null?B.report_band_low:0.7);
+const REL_BAND_HI=(B.report_band_high!=null?B.report_band_high:1.3);
+const AD_LINKS=DATA.ad_links||{};
+/* desempenho vs meta: CAC menor=melhor (meta/valor); ROAS maior=melhor (valor/meta) */
+function relPerf(v,kind){
+  if(v==null||!isFinite(v)) return null;
+  if(kind==='roas'){ return ROAS_TARGET?v/ROAS_TARGET:null; }
+  return (CAC_TARGET&&v>0)?CAC_TARGET/v:null;
+}
+function relColor(v,kind){ const p=relPerf(v,kind); if(p==null) return '';
+  if(p<REL_BAND_LO) return 'rc-red'; if(p<1) return 'rc-yellow';
+  if(p<REL_BAND_HI) return 'rc-green'; return 'rc-cyan'; }
+function relCard(label,val,hero){ return `<div class="rel-card${hero?' hero':''}"><div class="rl">${label}</div><div class="rv">${val}</div></div>`; }
+function relCards(id,t){ const d=derive(t);
+  document.getElementById(id).innerHTML=[
+    relCard('Valor Gasto',brl(d.gasto)),
+    relCard('Vendas',intf(t.vendas)),
+    relCard('Faturamento',brl(t.fat)),
+    relCard('CAC',`<span class="${relColor(d.cac,'cac')}">${brl(d.cac)}</span>`),
+    relCard('Ticket Médio',brl(d.ticket)),
+    relCard('ROAS',`<span class="${relColor(d.roas,'roas')}">${roasf(d.roas)}</span>`,true),
+  ].join('');
+}
+/* tabela estática simples (cols/rows/foot = [{v,cls}]) — mantém a estética .dt */
+function relRenderTable(id,cols,rows,foot){
+  const el=document.getElementById(id); if(!el) return;
+  const th='<thead><tr>'+cols.map(c=>`<th class="${c.cls||''}">${c.label}</th>`).join('')+'</tr></thead>';
+  const tb='<tbody>'+(rows.length?rows.map(r=>'<tr>'+r.map(c=>`<td class="${c.cls||''}">${c.v}</td>`).join('')+'</tr>').join('')
+    :`<tr><td class="dim" colspan="${cols.length}" style="color:var(--muted)">Sem dados no período.</td></tr>`)+'</tbody>';
+  const tf=foot?('<tfoot><tr>'+foot.map(c=>`<td class="${c.cls||''}">${c.v}</td>`).join('')+'</tr></tfoot>'):'';
+  el.innerHTML=th+tb+tf;
+}
+function adLink(name){ const u=AD_LINKS[name];
+  return u?`<a class="rel-adlink" href="${esc(u)}" target="_blank" rel="noopener">Abrir ▸</a>`:'<span class="rel-adlink off">—</span>'; }
+function relBriefKey(){ if(STATE.selDays.size) return null; return STATE.preset||null; }
+function renderRelBrief(){
+  const wrap=document.getElementById('relBrief'), stampEl=document.getElementById('relBriefStamp');
+  const bf=DATA.briefings||{}, per=bf.periodos||{}, key=relBriefKey();
+  stampEl.textContent = bf.generated_at ? `Briefing gerado por IA · última atualização ${bf.generated_at} · atualiza 1×/dia às 7h` : '';
+  if(!Object.keys(per).length){
+    wrap.innerHTML='<div class="rel-brief-empty">O briefing por IA ainda não foi gerado. Ele é atualizado automaticamente 1×/dia às 7h.</div>'; return; }
+  if(!key || !per[key]){
+    wrap.innerHTML='<div class="rel-brief-empty">Briefing disponível para os períodos predefinidos (Hoje, Ontem, 3&nbsp;dias, 7&nbsp;dias, 14&nbsp;dias, 30&nbsp;dias, Este mês, Mês passado, Todo período). Selecione um desses botões no topo.</div>'; return; }
+  const item=per[key];
+  wrap.innerHTML = item.html || item.texto || '<div class="rel-brief-empty">Sem conteúdo.</div>';
+}
+function renderRelatorios(){
+  const fM=metaActive(), fSall=salesActive(), fSads=fSall.filter(s=>s.meta);
+  const tTot=totals(fSall,fM), tAds=totals(fSads,fM);
+  const dvT=derive(tTot), dvA=derive(tAds);
+
+  /* cabeçalho do período */
+  const pr=PRESETS.find(p=>p[0]===STATE.preset);
+  document.getElementById('relPeriodName').textContent = STATE.selDays.size?'Dias selecionados':(pr?pr[1]:'Personalizado');
+  let rangeTxt='';
+  if(STATE.from&&STATE.to){ const nD=Math.round((new Date(STATE.to+'T00:00:00')-new Date(STATE.from+'T00:00:00'))/86400000)+1;
+    rangeTxt=`${brdate(STATE.from)} a ${brdate(STATE.to)}`+(nD>0?` · ${nD} dia${nD>1?'s':''}`:''); }
+  document.getElementById('relPeriodRange').textContent=rangeTxt;
+
+  /* cards */
+  relCards('relCardsTotal',tTot);
+  relCards('relCardsAds',tAds);
+
+  /* tabela diária resumida (Total | Ads) */
+  const ddTot=daily(fSall,fM), ddAds={}; daily(fSads,fM).forEach(x=>ddAds[x.d]=x);
+  const dcols=[{label:'Data'},{label:'Dia',cls:'dim'},{label:'Gasto'},{label:'Vendas Totais'},{label:'CAC Total'},{label:'ROAS Total'},
+    {label:'Vendas Ads',cls:'sep-col'},{label:'CAC Ads'},{label:'ROAS Ads'}];
+  const drows=ddTot.slice().reverse().map(x=>{ const dv=derive(x), a=ddAds[x.d], da=a?derive(a):null;
+    const cacA=da?da.cac:null, roasA=da?da.roas:null;
+    return [{v:brdate(x.d),cls:'dim'},{v:weekday(x.d),cls:'dim'},{v:brl(dv.gasto)},{v:intf(x.vendas)},
+      {v:brl(dv.cac),cls:relColor(dv.cac,'cac')},{v:roasf(dv.roas),cls:relColor(dv.roas,'roas')},
+      {v:intf(a?a.vendas:0),cls:'sep-col'},{v:brl(cacA),cls:relColor(cacA,'cac')},{v:roasf(roasA),cls:relColor(roasA,'roas')}]; });
+  const dfoot=[{v:'Total',cls:'dim'},{v:'',cls:'dim'},{v:brl(dvT.gasto)},{v:intf(tTot.vendas)},
+    {v:brl(dvT.cac),cls:relColor(dvT.cac,'cac')},{v:roasf(dvT.roas),cls:relColor(dvT.roas,'roas')},
+    {v:intf(tAds.vendas),cls:'sep-col'},{v:brl(dvA.cac),cls:relColor(dvA.cac,'cac')},{v:roasf(dvA.roas),cls:relColor(dvA.roas,'roas')}];
+  relRenderTable('relDaily',dcols,drows,dfoot);
+
+  /* visão por campanha (só Meta Ads) */
+  const aggC=buildAgg(fSads,fM,'camp');
+  const crows=Object.entries(aggC).sort((a,b)=>b[1].sp-a[1].sp).map(([name,ag])=>{ const d=derive(ag);
+    return [{v:esc(name),cls:'dim'},{v:brl(d.gasto)},{v:intf(ag.vendas)},
+      {v:roasf(d.roas),cls:relColor(d.roas,'roas')},{v:brl(d.cac),cls:relColor(d.cac,'cac')},
+      {v:brl(d.cpm)},{v:pct(d.ctr)},{v:pct(d.cr)},{v:pct(d.vischk)},{v:pct(d.convchk)}]; });
+  relRenderTable('relCamp',
+    [{label:'Campanha',cls:'dim'},{label:'Gasto'},{label:'Venda'},{label:'ROAS'},{label:'CAC'},{label:'CPM'},{label:'CTR'},{label:'CR'},{label:'VisCHK'},{label:'ConvCHK'}],
+    crows,
+    [{v:'Total',cls:'dim'},{v:brl(dvA.gasto)},{v:intf(tAds.vendas)},{v:roasf(dvA.roas),cls:relColor(dvA.roas,'roas')},{v:brl(dvA.cac),cls:relColor(dvA.cac,'cac')},
+     {v:brl(dvA.cpm)},{v:pct(dvA.ctr)},{v:pct(dvA.cr)},{v:pct(dvA.vischk)},{v:pct(dvA.convchk)}]);
+
+  /* top / piores anúncios (só Meta Ads, com gasto no período) */
+  const aggAd=buildAgg(fSads,fM,'ad');
+  const ads=Object.entries(aggAd).filter(([n,ag])=>ag.sp>0).map(([name,ag])=>{ const d=derive(ag);
+    return {name,gasto:d.gasto,vendas:ag.vendas,cac:d.cac,roas:d.roas}; });
+  ads.sort((a,b)=>{ const ra=a.roas==null?-1:a.roas, rb=b.roas==null?-1:b.roas; if(rb!==ra) return rb-ra;
+    const ca=a.cac==null?Infinity:a.cac, cb=b.cac==null?Infinity:b.cac; return ca-cb; });
+  const top=ads.slice(0,5), topSet=new Set(top.map(a=>a.name));
+  const worst=ads.filter(a=>!topSet.has(a.name)).slice(-5).reverse();
+  const adCols=[{label:'Anúncio',cls:'dim'},{label:'Gasto'},{label:'Vendas'},{label:'CAC'},{label:'ROAS'},{label:'Link',cls:'dim'}];
+  const adRows=list=>list.map(a=>[{v:esc(a.name),cls:'dim'},{v:brl(a.gasto)},{v:intf(a.vendas)},
+    {v:brl(a.cac),cls:relColor(a.cac,'cac')},{v:roasf(a.roas),cls:relColor(a.roas,'roas')},{v:adLink(a.name),cls:'dim'}]);
+  relRenderTable('relTop',adCols,adRows(top));
+  relRenderTable('relWorst',adCols,adRows(worst));
+
+  /* briefing do gestor (texto pré-gerado por IA) */
+  renderRelBrief();
+}
+
 /* ---------------- PAGE 3: IA Insights ---------------- */
 const r2=v=>(v==null||!isFinite(v))?null:Math.round(v*100)/100;
 const r4=v=>(v==null||!isFinite(v))?null:Math.round(v*10000)/10000;
@@ -595,13 +707,14 @@ function setPage(p){ STATE.page=p;
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===p));
   document.getElementById('page-geral').classList.toggle('active',p==='geral');
   document.getElementById('page-meta').classList.toggle('active',p==='meta');
+  document.getElementById('page-rel').classList.toggle('active',p==='rel');
   document.getElementById('page-ia').classList.toggle('active',p==='ia');
-  document.getElementById('ptitle').textContent = p==='meta'?'Meta Ads':(p==='ia'?'IA Insights':'Visão Geral');
+  document.getElementById('ptitle').textContent = p==='meta'?'Meta Ads':(p==='rel'?'Relatórios':(p==='ia'?'IA Insights':'Visão Geral'));
   document.getElementById('navToggle').checked=false;
   history.replaceState(null,'', '#'+p);
   renderAll();
 }
-function renderAll(){ if(STATE.page==='meta') renderMeta(); else if(STATE.page==='ia') renderIA(); else renderGeral(); }
+function renderAll(){ if(STATE.page==='meta') renderMeta(); else if(STATE.page==='rel') renderRelatorios(); else if(STATE.page==='ia') renderIA(); else renderGeral(); }
 
 /* Tema ESCURO é o padrão; só fica claro se o usuário tiver escolhido 'light'. */
 function applyTheme(){ const t=localStorage.getItem('dm_theme'); if(t==='light') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme','dark'); }
@@ -642,7 +755,7 @@ document.getElementById('buildFoot2').textContent='· build __BUILD_ID__';
 
 syncDateInputs(); renderPresets(); iaStatusText();
 document.getElementById('taxToggle').classList.toggle('on', STATE.tax);  /* imposto Meta ON por padrão */
-setPage(location.hash==='#meta'?'meta':(location.hash==='#ia'?'ia':'geral'));
+setPage(location.hash==='#meta'?'meta':(location.hash==='#rel'?'rel':(location.hash==='#ia'?'ia':'geral')));
 
 /* auto-refresh com cache-bust ~30 min */
 setTimeout(()=>{ location.href=location.pathname+'?t='+Date.now()+location.hash; }, 30*60*1000);

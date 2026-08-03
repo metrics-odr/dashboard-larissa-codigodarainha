@@ -20,6 +20,7 @@
     <div class="sec">Dashboards</div>
     <div class="nav-item active" data-page="geral"><span class="ic">◱</span> Visão Geral</div>
     <div class="nav-item" data-page="meta"><span class="ic">◨</span> Meta Ads</div>
+    <div class="nav-item" data-page="rel"><span class="ic">▤</span> Relatórios</div>
     <div class="nav-item" data-page="ia"><span class="ic">✦</span> IA Insights</div>
     <div class="foot">Somente leitura · atualiza ~30 min<br><span id="buildFoot"></span></div>
   </aside>
@@ -113,6 +114,64 @@
           <div class="tbl-wrap" style="max-height:360px"><table class="dt" id="tQual"></table></div>
           <p class="note" style="padding:10px 15px">E‑mail <b>mascarado</b> (página pública). Só vendas atribuídas ao Meta Ads (produto principal + orderbumps/upsells).</p>
         </div>
+      </div>
+
+      <!-- ===================== PÁGINA: RELATÓRIOS ===================== -->
+      <div class="page" id="page-rel">
+        <div class="rel-head">
+          <div>
+            <h2 class="rel-title">Relatório · <span id="relPeriodName">Período</span></h2>
+            <p class="rel-sub" id="relPeriodRange"></p>
+          </div>
+          <div class="rel-legend">
+            <span class="rel-legend-lbl">Metas (CAC/ROAS):</span>
+            <span class="rel-chip c-red">Muito abaixo</span>
+            <span class="rel-chip c-yellow">Pouco abaixo</span>
+            <span class="rel-chip c-green">Na meta / acima</span>
+            <span class="rel-chip c-cyan">Muito acima</span>
+          </div>
+        </div>
+
+        <h2 class="sec-title">Visão geral</h2>
+        <div class="rel-ov">
+          <div class="rel-ov-block">
+            <div class="rel-ov-head">Visão Geral Total <span>todas as vendas</span></div>
+            <div class="rel-cards" id="relCardsTotal"></div>
+          </div>
+          <div class="rel-ov-block">
+            <div class="rel-ov-head">Visão Geral Tráfego <span>apenas Meta Ads</span></div>
+            <div class="rel-cards" id="relCardsAds"></div>
+          </div>
+        </div>
+
+        <h2 class="sec-title">Funil dia a dia</h2>
+        <div class="card" style="padding:0">
+          <div class="tbl-wrap tbl-normal"><table class="dt rel-dt" id="relDaily"></table></div>
+          <p class="note" style="padding:10px 15px">Total = todas as vendas · Ads = só Meta Ads (separados pela barra vertical). <b>CAC</b> e <b>ROAS</b> com <b>código de cor</b> conforme a meta. Último dia no topo.</p>
+        </div>
+
+        <h2 class="sec-title">Visão por campanha</h2>
+        <div class="card" style="padding:0">
+          <div class="tbl-wrap"><table class="dt rel-dt" id="relCamp"></table></div>
+          <p class="note" style="padding:10px 15px">Nome completo da campanha · só Meta Ads. CAC/ROAS com código de cor conforme a meta.</p>
+        </div>
+
+        <h2 class="sec-title">Anúncios · destaques e alertas</h2>
+        <div class="rel-ads-grid">
+          <div class="card" style="padding:0">
+            <div class="rel-ads-head good">▲ Top 5 anúncios</div>
+            <div class="tbl-wrap"><table class="dt rel-dt" id="relTop"></table></div>
+          </div>
+          <div class="card" style="padding:0">
+            <div class="rel-ads-head bad">▼ Piores 5 anúncios</div>
+            <div class="tbl-wrap"><table class="dt rel-dt" id="relWorst"></table></div>
+          </div>
+        </div>
+        <p class="note">Ranqueados por ROAS (e CAC como desempate) entre anúncios com gasto relevante no período. Link abre o criativo no Instagram.</p>
+
+        <h2 class="sec-title">Briefing do Gestor</h2>
+        <div class="rel-brief" id="relBrief"></div>
+        <p class="note" id="relBriefStamp"></p>
       </div>
 
       <!-- ===================== PÁGINA 3: IA INSIGHTS ===================== -->

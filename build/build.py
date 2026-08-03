@@ -54,6 +54,21 @@ CLIENT_SUB   = "VSL Código da Rainha"
 TAX_LABEL    = "Imposto Meta ×1,13806"
 MAIN_PRODUCT = "Código da Rainha"
 
+# --- METAS (aba Relatórios) --------------------------------------------------
+# Alvos de desempenho usados APENAS para o código de cor das métricas principais
+# (CAC e ROAS) na aba "Relatórios". Edite aqui quando tiver os números reais.
+#   • ROAS: quanto MAIOR, melhor  -> desempenho = roas / ROAS_TARGET
+#   • CAC : quanto MENOR, melhor  -> desempenho = CAC_TARGET / cac
+# Faixas de cor (sobre o desempenho): <0,70 vermelho · 0,70–0,99 amarelo ·
+#   1,00–1,29 verde · ≥1,30 azul-ciano. As bordas ficam em REPORT_BAND_LOW/HIGH.
+# Exemplos coerentes entre si: ROAS = Ticket / CAC. Com ticket ~R$ 330 observado
+# no funil, ROAS alvo 2,0 equivale a um CAC alvo ~R$ 165. Ajuste ambos quando
+# tiver os números reais da operação (o código de cor usa exatamente estes).
+CAC_TARGET  = 165.0   # CAC alvo (R$ por venda do produto principal)
+ROAS_TARGET = 2.0     # ROAS alvo (Faturamento / Gasto)
+REPORT_BAND_LOW  = 0.70   # abaixo disso = "muito abaixo da meta" (vermelho)
+REPORT_BAND_HIGH = 1.30   # a partir disso = "muito acima da meta" (azul-ciano)
+
 # URL pública do Cloudflare Worker da aba IA Insights (não é secreta — o
 # navegador chama esse endereço para ler/gerar insights). Embutida no build para
 # QUALQUER visitante ver os insights já gerados sem precisar configurar nada no
@@ -205,7 +220,12 @@ def process(meta_rows, sales_rows):
          "spent": ["amount spent", "valor gasto", "gasto"], "impr": ["impressions", "impress"],
          "clicks": ["link clicks", "clicks", "cliques"],
          "pv": ["landing page views", "page views", "pageview", "landing"],
-         "ck": ["checkouts initiated", "checkouts", "initiate checkout", "checkout"]},
+         "ck": ["checkouts initiated", "checkouts", "initiate checkout", "checkout"],
+         # Link do criativo no Instagram (coluna acrescentada pelo cliente na aba
+         # Meta Ads). Usada na aba Relatórios (Top/Piores anúncios) para linkar o
+         # anúncio. Aliases cobrem variações do cabeçalho.
+         "link": ["creative instagram permalink", "instagram permalink", "permalink",
+                  "creative link", "link do anuncio", "link do criativo"]},
         {"day": 0, "campaign": 1, "adset": 2, "ad": 3, "spent": 4, "impr": 5,
          "clicks": 6, "pv": 7, "ck": 8},
     )
@@ -217,6 +237,10 @@ def process(meta_rows, sales_rows):
     # venda à campanha errada (era o caso da campanha "Bidcap"). Guardar os nomes
     # do Meta também alinha a venda à mesma linha do gasto nas tabelas.
     ad_map = {}
+    # Anúncio (nome, ex. "AD07") -> 1 permalink do Instagram. "Qualquer um
+    # correlato" ao anúncio serve (o mesmo criativo pode rodar em várias
+    # campanhas); guardamos o primeiro link não-vazio encontrado.
+    ad_links = {}
     for row in meta_rows[1:]:
         if not any((c or "").strip() for c in row):
             continue
@@ -228,6 +252,9 @@ def process(meta_rows, sales_rows):
         key = (norm(camp), norm(ad))
         if key not in ad_map:
             ad_map[key] = (camp, adset)
+        link = cell(row, midx["link"])
+        if link and ad not in ad_links:
+            ad_links[ad] = link
         meta.append({
             "d": parse_date(cell(row, midx["day"])),
             "camp": camp, "adset": adset, "ad": ad,
@@ -324,10 +351,39 @@ def process(meta_rows, sales_rows):
             "main_product": MAIN_PRODUCT,
             "main_product_prefix": MAIN_PRODUCT_PREFIX,
             "ia_worker_url": IA_WORKER_URL,
+            # Metas da aba Relatórios (código de cor de CAC/ROAS)
+            "cac_target": CAC_TARGET,
+            "roas_target": ROAS_TARGET,
+            "report_band_low": REPORT_BAND_LOW,
+            "report_band_high": REPORT_BAND_HIGH,
         },
         "meta": meta,
         "sales": sales,
+        "ad_links": ad_links,
+        # Briefings do Gestor por período (gerados por IA 1x/dia via Routine e
+        # salvos em build/relatorios.json). Preenchido em process()/main via
+        # load_briefings(); fica {} se o arquivo não existir.
+        "briefings": {},
     }
+
+
+# --------------------------------------------------------------------------- #
+# Briefings do Gestor (aba Relatórios) — texto gerado por IA 1x/dia
+# --------------------------------------------------------------------------- #
+def load_briefings(path: str) -> dict:
+    """Lê build/relatorios.json (gerado pela Routine diária). Estrutura:
+        {"generated_at": "...", "periodos": {"<preset>": {...}, ...}}
+    Retorna o dict de períodos (ou {} se o arquivo não existir/for inválido).
+    A geração NÃO acontece aqui — este build só lê o texto já pronto, sem
+    chamar nenhuma API (custo zero no build/no navegador)."""
+    if not path or not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            obj = json.load(f)
+        return obj if isinstance(obj, dict) else {}
+    except (ValueError, OSError):
+        return {}
 
 
 # --------------------------------------------------------------------------- #
@@ -366,6 +422,11 @@ def main():
     meta_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_META), args.meta_file)
     sales_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_SALES), args.sales_file)
     data = process(meta_rows, sales_rows)
+
+    # Briefings do Gestor (texto por IA, gerado 1x/dia pela Routine) — lidos do
+    # arquivo versionado ao lado do template. Sem chamada de API no build.
+    briefings_path = os.path.join(os.path.dirname(os.path.abspath(args.template)), "relatorios.json")
+    data["briefings"] = load_briefings(briefings_path)
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:

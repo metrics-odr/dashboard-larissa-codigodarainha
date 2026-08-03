@@ -50,7 +50,7 @@ jobs:
           }
           ID=$(find_id)
           if [ -z "$ID" ]; then
-            wrangler kv namespace create INSIGHTS_KV || true
+            wrangler kv namespace create "$TITLE" || true
             ID=$(find_id)
           fi
           if [ -n "$ID" ]; then

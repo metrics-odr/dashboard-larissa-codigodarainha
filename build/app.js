@@ -167,7 +167,7 @@ function toggleSet(set,key,ctrl){
 
 /* ---------------- charts ---------------- */
 const charts={};
-const CHART_SERIES=['--c1','--c2','--c3','--c4','--c5','--c6','--c7','--c8','--c9','--c10'];
+const CHART_SERIES=['--cc1','--cc2','--cc3','--cc4','--cc5','--cc6','--cc7','--cc8','--cc9','--cc10'];
 const cvar=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const chartPalette=()=>CHART_SERIES.map(v=>cvar(v)||'#888888');
 const hx2rgb=h=>{h=(h||'').replace('#','').trim();if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h||'888888',16);return [(n>>16)&255,(n>>8)&255,n&255];};
@@ -286,20 +286,49 @@ function renderProdTable(id, salesSet){
 }
 
 /* ---------------- funil + gráficos de conversão (comuns às 2 abas) ---------------- */
-function renderFunnel(id, steps){
-  document.getElementById(id).innerHTML=steps.map(s=>`
-    <div class="step"><div><div class="m-label">${s[0]}</div><div class="m-val">${s[1]}</div></div>
-    <div class="secs">${s[2].map(x=>`<div><span class="s-label">${x[0]}</span><span class="s-val">${x[1]}</span></div>`).join('')}</div></div>`).join('');
+/* ---- comparativo período atual vs período anterior de MESMO tamanho ---- */
+function prevWindow(){
+  if(!STATE.from||!STATE.to) return null;
+  const span=Math.round((new Date(STATE.to+'T00:00:00')-new Date(STATE.from+'T00:00:00'))/86400000)+1;
+  if(!(span>=1)) return null;
+  return {from:addDays(STATE.from,-span), to:addDays(STATE.from,-1), span};
 }
-function funnelSteps(t){ const d=derive(t), g=d.gasto; return [
-  ['Gasto Total', brl(g), []],
-  ['Impressões', intf(t.im), [['CPM',brl(d.cpm)]]],
-  ['Cliques', intf(t.cl), [['CPC',brl(d.cpc)],['CTR',pct(d.ctr)]]],
-  ['Page Views', intf(t.pv), [['CPV',brl(d.cpv)],['CR',pct(d.cr)]]],
-  ['Checkouts', intf(t.ck), [['CPIC',brl(d.cpic)],['VisCHK',pct(d.vischk)]]],
-  ['Vendas', intf(t.vendas), [['CAC',brl(d.cac)],['ConvCHK',pct(d.convchk)]]],
-  ['Faturamento', brl(t.fat), [['ROAS',roasf(d.roas)],['Ticket Médio',brl(d.ticket)]]],
-]; }
+const inRange=(d,a,b)=>d&&d>=a&&d<=b;
+/* métricas em que MENOR é melhor (custo); nas demais, maior é melhor */
+const GOOD_LOW={gasto:1,cpm:1,cpc:1,cpv:1,cpic:1,cac:1};
+function deltaBadge(cur,prev,key){
+  if(cur==null||prev==null||!isFinite(cur)||!isFinite(prev)||prev===0) return '';
+  const p=((cur-prev)/Math.abs(prev))*100; if(!isFinite(p)) return '';
+  const flat=Math.abs(p)<0.05, up=cur>prev;
+  const good=flat?null:(GOOD_LOW[key]?!up:up);
+  const cls=flat?'flat':(good?'good':'bad'), arrow=flat?'→':(up?'▲':'▼');
+  return `<span class="delta ${cls}">${arrow} ${nf1.format(Math.abs(p))}%</span>`;
+}
+function renderFunnel(id, steps){
+  document.getElementById(id).innerHTML=steps.map(s=>{
+    const color=s[4]?`var(${s[4]})`:'var(--accent-blue)';
+    const hi=(s[3]==='gasto'||s[3]==='fat');   // valores em destaque + contorno inteiro
+    const border=hi?`border-color:${color}`:`border-left-color:${color}`;
+    const secs=s[2].map(x=>`<div><span class="s-label">${x[0]}</span><span class="s-val${x[2]?' s-pill '+x[2]:''}">${x[1]}</span></div>`).join('');
+    return `<div class="step" style="${border}">
+      <div class="step-main"><div class="m-label">${s[0]}</div>
+        <div class="m-val"${hi?` style="color:${color}"`:''}>${s[1]}</div>
+        ${s[5]?`<div class="m-delta">${s[5]}</div>`:''}</div>
+      <div class="secs">${secs}</div></div>`;
+  }).join('');
+}
+function funnelSteps(t, tp){
+  const d=derive(t), P=(k)=>tp?tp[k]:null, Pd=tp?derive(tp):null;
+  return [
+    ['Gasto Total', brl(d.gasto), [], 'gasto', '--heat-gasto', deltaBadge(d.gasto, Pd?Pd.gasto:null, 'gasto')],
+    ['Impressões', intf(t.im), [['CPM',brl(d.cpm)]], 'impr', '--c6', deltaBadge(t.im, P('im'), 'im')],
+    ['Cliques', intf(t.cl), [['CPC',brl(d.cpc)],['CTR',pct(d.ctr)]], 'cl', '--c1', deltaBadge(t.cl, P('cl'), 'cl')],
+    ['Page Views', intf(t.pv), [['CPV',brl(d.cpv)],['CR',pct(d.cr)]], 'pv', '--c4', deltaBadge(t.pv, P('pv'), 'pv')],
+    ['Checkouts', intf(t.ck), [['CPIC',brl(d.cpic)],['VisCHK',pct(d.vischk)]], 'ck', '--c3', deltaBadge(t.ck, P('ck'), 'ck')],
+    ['Vendas', intf(t.vendas), [['CAC',brl(d.cac),'cac'],['ConvCHK',pct(d.convchk)]], 'vendas', '--c7', deltaBadge(t.vendas, P('vendas'), 'vendas')],
+    ['Faturamento', brl(t.fat), [['ROAS',roasf(d.roas),'roas'],['Ticket Médio',brl(d.ticket)]], 'fat', '--heat-fat', deltaBadge(t.fat, P('fat'), 'fat')],
+  ];
+}
 function convCharts(id1,id2,id3,dd){
   multiLine(id1, dd, [{label:'CPM',fn:x=>x.im?+((x.sp*taxf())/x.im*1000).toFixed(2):null,color:cvar('--chart-cpm'),fmt:'brl',axis:'L'},
      {label:'CTR',fn:x=>x.im?+(x.cl/x.im).toFixed(4):null,color:cvar('--chart-ctr'),fmt:'pct',axis:'R'}], {L:{fmt:'brl'},R:{fmt:'pct'}});
@@ -313,7 +342,9 @@ function convCharts(id1,id2,id3,dd){
 function renderGeral(){
   const fM=metaActive(), fS=salesActive();          // fS = todas as vendas do funil
   const t=totals(fS,fM), d=derive(t);
-  renderFunnel('geralFunnel', funnelSteps(t));
+  const pw=prevWindow();
+  const tp = pw ? totals(SALES.filter(s=>inRange(s.d,pw.from,pw.to)), META.filter(m=>inRange(m.d,pw.from,pw.to))) : null;
+  renderFunnel('geralFunnel', funnelSteps(t, tp));
   const dd=daily(fS,fM);
   convCharts('gCpmCtr','gCrVis','gConv', dd);
   comboChart('gCombo', dd);
@@ -341,10 +372,19 @@ function selDim(dim,key,ctrl){
     Object.values(sets).forEach(x=>x.clear()); if(!sole) s.add(key); }
   renderMeta();
 }
+function metaPrevTotals(pw){
+  let fM=META.filter(m=>inRange(m.d,pw.from,pw.to));
+  let fS=SALES.filter(s=>s.meta && inRange(s.d,pw.from,pw.to));
+  if(STATE.mSelC.size){fM=fM.filter(r=>STATE.mSelC.has(r.camp));fS=fS.filter(r=>STATE.mSelC.has(r.camp));}
+  if(STATE.mSelA.size){fM=fM.filter(r=>STATE.mSelA.has(r.adset));fS=fS.filter(r=>STATE.mSelA.has(r.adset));}
+  if(STATE.mSelAd.size){fM=fM.filter(r=>STATE.mSelAd.has(r.ad));fS=fS.filter(r=>STATE.mSelAd.has(r.ad));}
+  return totals(fS,fM);
+}
 function renderMeta(){
   const F=metaScope(null), fM=F.fM, fS=F.fS;
   const t=totals(fS,fM), d=derive(t);
-  renderFunnel('metaFunnel', funnelSteps(t));
+  const pw=prevWindow(); const tp = pw ? metaPrevTotals(pw) : null;
+  renderFunnel('metaFunnel', funnelSteps(t, tp));
 
   const dd=daily(fS,fM);
   convCharts('mCpmCtr','mCrVis','mConv', dd);

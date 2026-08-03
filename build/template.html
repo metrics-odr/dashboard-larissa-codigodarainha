@@ -295,17 +295,17 @@
             <span class="hint" id="iaStatus" style="margin:0"></span>
           </div>
           <div class="ia-config" id="iaConfig" style="display:none">
-            <p class="hint" style="margin:6px 0">Cole a URL do seu Cloudflare Worker e a senha (ficam só neste navegador — nunca no código público). Passo a passo em <b>SETUP-IA.md</b>.</p>
+            <p class="hint" style="margin:6px 0">Os insights já ficam salvos no Worker (Cloudflare) e aparecem para <b>qualquer visitante</b>, em qualquer navegador, sem configurar nada. Para <b>gerar novos insights</b> é preciso a senha (a mesma do secret <code>INSIGHTS_PASSWORD</code>) — fica salva só neste navegador. Só preencha "Worker URL" se quiser apontar para outro backend; o padrão já vem embutido no build. Passo a passo em <b>SETUP-IA.md</b>.</p>
             <div class="ia-fields">
-              <label>Worker URL<input id="iaUrl" placeholder="https://reset-ia-insights.xxx.workers.dev"></label>
+              <label>Worker URL (opcional)<input id="iaUrl" placeholder="https://reset-ia-insights.xxx.workers.dev"></label>
               <label>Senha<input id="iaPass" type="password" placeholder="senha do Worker"></label>
               <button class="btn primary" id="iaSave">Salvar</button>
             </div>
             <span class="hint" id="iaCfgMsg" style="display:block; margin-top:6px"></span>
           </div>
-          <p class="note">Análise feita por IA (Claude) do <b>funil</b> e das <b>estruturas ativas</b> — CPM, CTR, CR, VisCHK, ConvLP, ConvCHK, CAC, ROAS, Ticket. A janela acima (independente do filtro das outras abas) define o histórico usado para detectar <b>tendência/saturação</b> (compara a metade recente vs a anterior). Sinaliza gargalos e destaques; recomendações de verba consideram <b>ABO (conjunto)</b> e <b>CBO (campanha)</b>. Aplicação de verba: peça no chat que eu executo no Meta. Cada clique = 1 chamada à IA.</p>
+          <p class="note">Análise feita por IA (Claude) do <b>funil</b> e das <b>estruturas ativas</b> — CPM, CTR, CR, VisCHK, ConvLP, ConvCHK, CAC, ROAS, Ticket. A janela acima (independente do filtro das outras abas) define o histórico usado para detectar <b>tendência/saturação</b> (compara a metade recente vs a anterior). Sinaliza gargalos e destaques; recomendações de verba consideram <b>ABO (conjunto)</b> e <b>CBO (campanha)</b>. Aplicação de verba: peça no chat que eu executo no Meta. Cada clique em "Gerar insights" = 1 chamada à IA, e o resultado substitui o anterior para todo mundo.</p>
         </div>
-        <div id="iaCards" class="ia-cards"><div class="ia-empty">Configure o backend e clique em <b>Gerar insights</b>.</div></div>
+        <div id="iaCards" class="ia-cards"><div class="ia-empty">Carregando insights…</div></div>
       </div>
 
       <div class="foot">Atualizado automaticamente a cada ~30 min via GitHub Actions + cron‑job.org. Somente leitura das planilhas. <span id="buildFoot2"></span></div>
@@ -779,16 +779,17 @@ function iaBuildData(){
     vendas_por_produto: Object.entries(byProd).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([produto,vendas])=>({produto,vendas})),
   };
 }
+function iaBackendUrl(){ return iaNormUrl(localStorage.getItem('ia_backend')||B.ia_worker_url||''); }
 function iaStatusText(){
-  const b=localStorage.getItem('ia_backend');
-  document.getElementById('iaStatus').textContent = b ? 'backend configurado ✓' : 'backend não configurado — clique em Configurar';
-  document.getElementById('iaGen').disabled = !b;
+  const b=iaBackendUrl(), p=localStorage.getItem('ia_pass');
+  document.getElementById('iaStatus').textContent = b ? '' : 'backend não configurado — clique em Configurar';
+  document.getElementById('iaGen').disabled = !(b&&p);
 }
 function iaShow(html){ document.getElementById('iaCards').innerHTML=html; }
 function iaFmtDate(ts){ try{ return new Date(ts).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(_){ return ''; } }
-function iaRenderCards(insights,usage,at){
+function iaRenderCards(insights,usage,at,from,to){
   if(!insights.length){ iaShow('<div class="ia-empty">A IA não retornou insights.</div>'); return; }
-  const stamp = at ? `<div class="ia-empty" style="grid-column:1/-1;text-align:left">Gerado em ${iaFmtDate(at)}${STATE?` · filtro ${esc(STATE.from||'')} a ${esc(STATE.to||'')}`:''}</div>` : '';
+  const stamp = at ? `<div class="ia-empty" style="grid-column:1/-1;text-align:left">Gerado em ${iaFmtDate(at)}${from&&to?` · janela ${esc(from)} a ${esc(to)}`:''}</div>` : '';
   const sev=s=>['alta','media','baixa'].includes(String(s))?s:'baixa';
   const cards=insights.map(i=>{
     const s=sev(i.severidade); let verba='';
@@ -810,35 +811,36 @@ function iaRenderCards(insights,usage,at){
 }
 function iaNormUrl(u){ u=(u||'').trim(); if(u && !/^https?:\/\//i.test(u)) u='https://'+u; return u; }
 async function iaGenerate(){
-  const backend=iaNormUrl(localStorage.getItem('ia_backend')), pass=localStorage.getItem('ia_pass');
+  const backend=iaBackendUrl(), pass=localStorage.getItem('ia_pass');
   if(!backend||!pass){ document.getElementById('iaConfig').style.display='block'; return; }
   const btn=document.getElementById('iaGen'); btn.classList.add('loading'); btn.disabled=true;
   iaShow('<div class="ia-empty">Gerando insights com a IA… (pode levar alguns segundos)</div>');
   try{
     const res=await fetch(backend,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pass,data:iaBuildData()})});
     const txt=await res.text(); let j=null; try{ j=JSON.parse(txt); }catch{}
-    if(!j){ iaShow('<div class="ins-card err"><div class="ins-title">Resposta inválida do backend</div><div class="ins-diag">HTTP '+res.status+'. A URL do Worker pode estar errada ou o Worker não está publicado. Abra a URL no navegador: deve mostrar <code>{"error":"Use POST."}</code>.</div><div class="ins-struct">'+esc(txt.slice(0,200))+'</div></div>'); return; }
+    if(!j){ iaShow('<div class="ins-card err"><div class="ins-title">Resposta inválida do backend</div><div class="ins-diag">HTTP '+res.status+'. A URL do Worker pode estar errada ou o Worker não está publicado. Abra a URL no navegador: deve mostrar <code>{"error":"Use GET ou POST."}</code>.</div><div class="ins-struct">'+esc(txt.slice(0,200))+'</div></div>'); return; }
     if(!res.ok || j.error){
       const extra=[]; if(j.detail) extra.push(String(j.detail)); if(j.stop_reason) extra.push('stop_reason='+j.stop_reason); if(j.raw) extra.push('Resposta do modelo: '+String(j.raw));
       iaShow('<div class="ins-card err"><div class="ins-title">Erro</div><div class="ins-diag">'+esc(j.error||('HTTP '+res.status))+'</div>'+(extra.length?('<div class="ins-struct" style="white-space:pre-wrap">'+esc(extra.join('\n').slice(0,1200))+'</div>'):'')+'</div>');
     }
     else {
-      const at=Date.now();
-      try{ localStorage.setItem('ia_last', JSON.stringify({insights:j.insights||[], usage:j.usage||null, at, from:STATE.from, to:STATE.to})); }catch(_){}
-      iaRenderCards(j.insights||[], j.usage, at);
+      iaRenderCards(j.insights||[], j.usage, j.at||Date.now(), j.from, j.to);
     }
   }catch(e){ iaShow('<div class="ins-card err"><div class="ins-title">Falha de rede</div><div class="ins-diag">'+esc(e.message)+' — a URL deve começar com https:// e terminar em .workers.dev, e o Worker precisa estar publicado (CORS).</div></div>'); }
   finally{ btn.classList.remove('loading'); btn.disabled=false; }
 }
-function iaRestore(){
-  let saved=null; try{ saved=JSON.parse(localStorage.getItem('ia_last')||'null'); }catch(_){}
-  if(saved && Array.isArray(saved.insights) && saved.insights.length){
-    iaRenderCards(saved.insights, saved.usage, saved.at);
-    return true;
-  }
-  return false;
+async function iaLoadLatest(){
+  const backend=iaBackendUrl();
+  if(!backend){ iaShow('<div class="ia-empty">Configure o backend e clique em <b>Gerar insights</b>.</div>'); return; }
+  iaShow('<div class="ia-empty">Carregando insights…</div>');
+  try{
+    const res=await fetch(backend,{method:'GET'});
+    const j=await res.json().catch(()=>null);
+    if(j && Array.isArray(j.insights) && j.insights.length){ iaRenderCards(j.insights, j.usage, j.at, j.from, j.to); }
+    else { iaShow('<div class="ia-empty">Nenhum insight gerado ainda. Clique em <b>Gerar insights</b>.</div>'); }
+  }catch(e){ iaShow('<div class="ia-empty">Não foi possível carregar os insights agora. Clique em <b>Gerar insights</b>.</div>'); }
 }
-function renderIA(){ iaStatusText(); iaRenderWin(); iaRestore(); }
+function renderIA(){ iaStatusText(); iaRenderWin(); iaLoadLatest(); }
 
 /* ---------------- date presets ---------------- */
 const PRESETS=[

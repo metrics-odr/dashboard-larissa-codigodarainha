@@ -1,17 +1,24 @@
 /**
  * Cloudflare Worker — backend da aba "IA Insights" do dashboard de tráfego direto/VSL.
  * Deploy automatizado via GitHub Actions (.github/workflows/deploy-worker.yml),
- * que reaplica os secrets ANTHROPIC_API_KEY e INSIGHTS_PASSWORD a cada publicacao.
+ * que reaplica os secrets ANTHROPIC_API_KEY e INSIGHTS_PASSWORD a cada publicacao
+ * e provisiona o KV namespace usado para persistir o último resultado.
  *
- * A página (GitHub Pages, pública) envia um POST com { password, data }.
- * O Worker valida a senha, chama a API da Anthropic (Claude) com um system
- * prompt de especialista em tráfego pago / VSL / high-ticket e devolve os
- * insights em JSON. A chave da Anthropic e a senha ficam como SECRETS do
- * Worker — nunca na página pública.
+ * A página (GitHub Pages, pública) envia um POST com { password, data } para
+ * GERAR insights (exige senha) e um GET (sem senha) para LER o último resultado
+ * já gerado — isso é o que permite qualquer visitante, em qualquer navegador,
+ * ver os insights sem precisar clicar em "Gerar" de novo. O Worker valida a
+ * senha, chama a API da Anthropic (Claude) com um system prompt de especialista
+ * em tráfego pago / VSL / high-ticket, devolve os insights em JSON e grava uma
+ * cópia no KV (binding INSIGHTS_KV) para as próximas leituras via GET. A chave
+ * da Anthropic e a senha ficam como SECRETS do Worker — nunca na página pública.
  *
  * Secrets necessários (Settings → Variables and Secrets):
  *   ANTHROPIC_API_KEY  = sua chave sk-ant-...
  *   INSIGHTS_PASSWORD  = a senha que você digita na aba IA Insights
+ *
+ * Binding necessário: KV namespace INSIGHTS_KV (ver wrangler.toml — provisionado
+ * automaticamente pelo workflow de deploy).
  */
 
 const MODEL = "claude-sonnet-5";
@@ -56,10 +63,12 @@ O campo "verba" só deve existir quando houver recomendação de mudança de or�
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
   "Access-Control-Max-Age": "86400",
 };
+
+const KV_KEY = "latest";
 
 // Extrai { insights: [...] } da resposta do modelo, tolerando cercas de
 // markdown (```json ... ```) ou texto em volta do JSON.
@@ -90,7 +99,17 @@ function json(body, status = 200) {
 export default {
   async fetch(request, env) {
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: CORS });
-    if (request.method !== "POST") return json({ error: "Use POST." }, 405);
+
+    // Leitura pública do último resultado gerado — sem senha. É o que faz os
+    // insights aparecerem para qualquer visitante, em qualquer navegador.
+    if (request.method === "GET") {
+      if (!env.INSIGHTS_KV) return json({ insights: null });
+      let stored;
+      try { stored = await env.INSIGHTS_KV.get(KV_KEY, "json"); } catch { stored = null; }
+      return json(stored || { insights: null });
+    }
+
+    if (request.method !== "POST") return json({ error: "Use GET ou POST." }, 405);
 
     let payload;
     try { payload = await request.json(); }
@@ -144,6 +163,16 @@ export default {
         raw: text.slice(0, 1500),
       }, 200);
     }
-    return json({ insights: parsed.insights, usage: data.usage || null });
+    const result = {
+      insights: parsed.insights,
+      usage: data.usage || null,
+      at: Date.now(),
+      from: payload?.data?.periodo?.de ?? null,
+      to: payload?.data?.periodo?.ate ?? null,
+    };
+    if (env.INSIGHTS_KV) {
+      try { await env.INSIGHTS_KV.put(KV_KEY, JSON.stringify(result)); } catch (_) {}
+    }
+    return json(result);
   },
 };

@@ -53,6 +53,13 @@ CLIENT_NAME  = "Larissa Topper"
 CLIENT_SUB   = "VSL Código da Rainha"
 TAX_LABEL    = "Imposto Meta ×1,13806"
 MAIN_PRODUCT = "Código da Rainha"
+
+# URL pública do Cloudflare Worker da aba IA Insights (não é secreta — o
+# navegador chama esse endereço para ler/gerar insights). Embutida no build para
+# QUALQUER visitante ver os insights já gerados sem precisar configurar nada no
+# próprio navegador; a senha continua exigida só para GERAR novos insights.
+# Copie na tela do Worker, na Cloudflare (Compute (Workers) → nome do Worker).
+IA_WORKER_URL = ""  # TODO: colar a URL do Worker (https://...workers.dev)
 # ==========================================================================
 
 EXPORT_URL = "https://docs.google.com/spreadsheets/d/{sid}/export?format=csv&gid={gid}"
@@ -301,6 +308,7 @@ def process(meta_rows, sales_rows):
             "tax_label": TAX_LABEL,
             "main_product": MAIN_PRODUCT,
             "main_product_prefix": MAIN_PRODUCT_PREFIX,
+            "ia_worker_url": IA_WORKER_URL,
         },
         "meta": meta,
         "sales": sales,

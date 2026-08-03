@@ -48,10 +48,16 @@ Ordem para colocar um cliente novo no ar. Cada item aponta o arquivo e o marcado
    arquivo dentro de `ia-worker/` já dispara `.github/workflows/deploy-worker.yml`
    automaticamente (ou rode manualmente pela aba Actions, se o workflow tiver
    `workflow_dispatch`).
-10. [ ] **Configurar o dashboard** — na aba **IA Insights** → **⚙ Configurar**,
-    colar a URL do Worker (copiada na Cloudflare) e a mesma senha do secret
-    `INSIGHTS_PASSWORD`, e clicar em **Salvar**.
-11. [ ] **Testar** — clicar em **Gerar insights** e confirmar que os cards aparecem.
+10. [ ] **Embutir a URL do Worker no build** — copiar a URL do Worker (exibida na
+    Cloudflare) para `IA_WORKER_URL` em `build/build.py` e rodar/disparar um novo
+    build. Isso faz os insights aparecerem para **qualquer visitante**, em qualquer
+    navegador, sem precisar configurar nada — a persistência é no Worker (KV), não
+    no navegador. Na aba **IA Insights** → **⚙ Configurar**, só é preciso colar a
+    senha (a mesma do secret `INSIGHTS_PASSWORD`) para poder **gerar** novos
+    insights; o campo "Worker URL" ali é opcional (só para apontar a um backend
+    diferente do padrão embutido).
+11. [ ] **Testar** — clicar em **Gerar insights** e confirmar que os cards aparecem
+    (e continuam aparecendo depois de recarregar a página em outro navegador).
 
 Cliente configurado: **Larissa Topper** — dados preenchidos em `build/build.py`
 e publicação ativa no GitHub Pages.
@@ -123,6 +129,16 @@ Aba de análise por IA (Claude) do funil e das estruturas ativas — ver `SETUP-
 para o passo a passo completo de configuração do backend (Cloudflare Worker +
 deploy automático via GitHub Actions).
 
+**Persistência:** o último resultado gerado fica salvo no **Worker (KV namespace
+`INSIGHTS_KV`)**, não no navegador — por isso qualquer visitante, em qualquer
+navegador, vê os mesmos insights sem precisar gerar de novo. A URL do Worker vem
+embutida no build (`IA_WORKER_URL` em `build.py`); a senha (`INSIGHTS_PASSWORD`)
+só é exigida para **gerar** novos insights (POST), não para ler os já gerados
+(GET, público). O workflow `deploy-worker.yml` cria o KV namespace sozinho no
+primeiro deploy; se o `CLOUDFLARE_API_TOKEN` não tiver a permissão "Workers KV
+Storage: Edit", ele publica o Worker sem persistência (volta ao comportamento
+antigo, sem quebrar o deploy) e avisa no log do Actions.
+
 ## Arquitetura / arquivos
 
 ```
@@ -161,3 +177,8 @@ Teste local:
    secrets `ANTHROPIC_API_KEY`/`INSIGHTS_PASSWORD` não estão cadastrados como Secrets
    do repositório no GitHub — o workflow `deploy-worker.yml` os reaplica no Worker a
    cada deploy; sem eles cadastrados, o Worker fica sem senha válida.
+7. **Insights "somem":** se estiverem salvos só no navegador (versões antigas do
+   template), limpar dados do navegador apaga tudo. A partir desta versão a
+   persistência é no Worker (KV) — ver seção "IA Insights" acima; confirme que
+   `IA_WORKER_URL` está preenchido em `build.py` e que o log do deploy do Worker
+   não mostrou o aviso de KV sem permissão.

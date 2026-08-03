@@ -36,8 +36,11 @@ publica sozinho — sem repetir nada manualmente na Cloudflare.
 2. Clique no ícone do seu perfil (canto superior direito) → **My Profile**.
 3. Menu lateral → **API Tokens** → botão **Create Token**.
 4. Procure o template **"Edit Cloudflare Workers"** → **Use template**.
-5. Confirme a permissão **Account → Workers Scripts → Edit** → **Continue to
-   summary** → **Create Token**.
+5. Confirme as permissões **Account → Workers Scripts → Edit** e **Account →
+   Workers KV Storage → Edit** (o template já costuma incluir as duas; se só
+   tiver Workers Scripts, adicione Workers KV Storage manualmente — é o que
+   permite ao deploy criar o KV namespace que guarda os insights) → **Continue
+   to summary** → **Create Token**.
 6. Copie o token exibido (só aparece uma vez).
 
 ### A.3 — Cadastrar os 4 Secrets no GitHub
@@ -57,16 +60,26 @@ No repositório do cliente no GitHub:
 2. Faça um commit tocando qualquer arquivo dentro de `ia-worker/` (isso dispara o
    workflow `.github/workflows/deploy-worker.yml`).
 3. Na aba **Actions** do repositório, confira a execução **"Deploy IA Worker
-   (Cloudflare)"** — espere ficar verde.
+   (Cloudflare)"** — espere ficar verde. Um dos passos cria automaticamente o KV
+   namespace (`INSIGHTS_KV`) que guarda o último resultado gerado; se o log mostrar
+   um aviso (`::warning`) dizendo que não conseguiu criar o KV, confira a permissão
+   "Workers KV Storage: Edit" no token (passo A.2.5) — o Worker ainda assim é
+   publicado, só fica temporariamente sem persistência.
 4. Esse deploy já publica o Worker **e** aplica os dois secrets
    (`ANTHROPIC_API_KEY`, `INSIGHTS_PASSWORD`) nele automaticamente — não precisa
    repetir a Opção B abaixo.
 
-### A.5 — Configurar o dashboard
+### A.5 — Embutir a URL do Worker no build
 
-1. Na aba **IA Insights** → **⚙ Configurar**.
-2. Cole a **URL do Worker** (passo A.1.8) e a **senha** (a mesma de `INSIGHTS_PASSWORD`).
-3. Clique em **Salvar** → clique em **Gerar insights** para testar.
+1. Copie a **URL do Worker** (passo A.1.8).
+2. Cole em `IA_WORKER_URL` (`build/build.py`) e rode/dispare um novo build.
+3. Pronto: **qualquer visitante**, em qualquer navegador, já vê os insights
+   assim que abrir a aba — a página lê o resultado direto do Worker (KV), não
+   do navegador. Na aba **IA Insights** → **⚙ Configurar**, só é preciso colar a
+   **senha** (a mesma de `INSIGHTS_PASSWORD`) para poder **gerar** novos
+   insights; o campo "Worker URL" ali é opcional (só para testar outro backend).
+4. Clique em **Gerar insights** para testar — o resultado passa a valer para
+   todo mundo, em qualquer navegador, até a próxima geração.
 
 ## Opção B — Manual (sem GitHub Actions)
 

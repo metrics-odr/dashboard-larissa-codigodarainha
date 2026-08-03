@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,10 +17,26 @@
     --good:#0CA30C; --bad:#E34948; --yellow:#E8A400; --aqua:#1BAF7A; --red:#E34948; --black:#1A1D2E;
     --grid:#EEF0F5; --thead:#F5F7FB; --tfoot:#EEF1F7;
   }
+  /* Identidade visual — tema ESCURO (não mexer no tema claro acima). */
   :root[data-theme="dark"]{
-    --text-primary:#0A0C11; --accent-blue:#5B7BF0; --accent-blue-light:#1B2440; --selected:#26365F;
-    --bg:#0F1117; --surface:#171A22; --border:#2A2F3A; --muted:#9AA1AD; --ink:#F2F3F5;
-    --grid:#252A34; --thead:#1E222C; --tfoot:#1B1F27;
+    --text-primary:#0B0E14;      /* fundo da sidebar (mais escuro que o fundo principal) */
+    --bg:#0F1117;                /* Fundo principal */
+    --surface:#171B24;           /* Cards */
+    --border:#2C3444;            /* Bordas */
+    --ink:#F4F7FB;               /* Texto principal */
+    --muted:#A9B4C4;             /* Texto secundário */
+    --accent-blue:#3B82F6;       /* Accent: botões, links, abas ativas, foco */
+    --accent-blue-light:#1B2740; /* fundo sutil azulado: badges, hover de linha, hero */
+    --selected:#27354A;          /* Linha selecionada */
+    --good:#22C55E;              /* Positivo */
+    --bad:#EF4444;               /* Negativo */
+    --red:#EF4444;
+    --yellow:#F59E0B;            /* Alerta */
+    --aqua:#06B6D4;              /* Info/seleção (severidade baixa) */
+    --black:#0F1117;
+    --grid:#2C3444;              /* Linhas do gráfico */
+    --thead:#1E2430;             /* Cabeçalho de tabela (= cards hover) */
+    --tfoot:#1E2430;
   }
   *{box-sizing:border-box}
   html,body{margin:0}
@@ -346,7 +362,7 @@ const TODAY = B.today || B.date_max;
 
 /* ---------------- STATE ---------------- */
 const STATE = {
-  page:'geral', from:B.date_min, to:B.date_max, preset:'todo', tax:false,
+  page:'geral', from:B.date_min, to:B.date_max, preset:'todo', tax:true,
   selDays:new Set(),
   mSelC:new Set(), mSelA:new Set(), mSelAd:new Set(),
   sort:{}, colw: JSON.parse(localStorage.getItem('dm_colw')||'{}'),
@@ -875,7 +891,8 @@ function setPage(p){ STATE.page=p;
 }
 function renderAll(){ if(STATE.page==='meta') renderMeta(); else if(STATE.page==='ia') renderIA(); else renderGeral(); }
 
-function applyTheme(){ const t=localStorage.getItem('dm_theme'); if(t==='dark') document.documentElement.setAttribute('data-theme','dark'); else document.documentElement.removeAttribute('data-theme'); }
+/* Tema ESCURO é o padrão; só fica claro se o usuário tiver escolhido 'light'. */
+function applyTheme(){ const t=localStorage.getItem('dm_theme'); if(t==='light') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme','dark'); }
 applyTheme();
 document.getElementById('themeBtn').addEventListener('click',()=>{ const dark=document.documentElement.getAttribute('data-theme')==='dark'; localStorage.setItem('dm_theme',dark?'light':'dark'); applyTheme(); renderAll(); });
 
@@ -912,6 +929,7 @@ document.getElementById('buildFoot').textContent='build __BUILD_ID__';
 document.getElementById('buildFoot2').textContent='· build __BUILD_ID__';
 
 syncDateInputs(); renderPresets(); iaStatusText();
+document.getElementById('taxToggle').classList.toggle('on', STATE.tax);  /* imposto Meta ON por padrão */
 setPage(location.hash==='#meta'?'meta':(location.hash==='#ia'?'ia':'geral'));
 
 /* auto-refresh com cache-bust ~30 min */

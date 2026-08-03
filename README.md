@@ -1,4 +1,4 @@
-# <<PREENCHER: nome do cliente>> — Dashboard de Controle de Tráfego Pago (VSL/Tráfego Direto)
+# Larissa Topper — Dashboard de Controle de Tráfego Pago (VSL/Tráfego Direto)
 
 > Este repositório é um **template**. Antes de usar, siga o **CHECKLIST DE NOVO
 > CLIENTE** no topo do `CLAUDE.md`.
@@ -21,7 +21,7 @@ Teste local:
 python build/build.py --meta-file meta.csv --sales-file sales.csv --out dist/index.html
 ```
 
-**URL pública:** `<<PREENCHER: URL do GitHub Pages>>`
+**URL pública:** `https://eduardomezzavilla.github.io/dashboard-larissa-codigodarainha/`
 
 ## Métricas do funil VSL
 
@@ -30,9 +30,8 @@ Gasto · Impressões · **CPM** · Cliques · **CPC** · **CTR** · Page Views �
 Vendas · **CAC** (Gasto/Vendas) · **ConvCHK** (Vendas/Checkouts) · Faturamento ·
 **ROAS** (Faturamento/Gasto) · **Ticket Médio** (Faturamento/Vendas).
 
-- **Produto principal** (base de Vendas / CAC / ConvCHK / Ticket): `<<PREENCHER:
-  nome de exibição do produto principal>>`. Configurável em `MAIN_PRODUCT_PREFIX`
-  (`build/build.py`).
+- **Produto principal** (base de Vendas / CAC / ConvCHK / Ticket): `Código da Rainha`.
+  Configurável em `MAIN_PRODUCT_PREFIX` (`build/build.py`).
 - **Faturamento / ROAS**: consideram **todos os produtos** do funil (orderbumps e
   upsells inclusos), atribuídos ao tráfego rastreado.
 - **Imposto Meta**: toggle ON aplica o fator configurado em `TAX_FACTOR`.
@@ -54,8 +53,8 @@ tabelas com ordenação/redimensionamento/multi-seleção, cache-bust.
 ## Arquivos
 
 - `build/template.html` — a **engine** (CSS + JS). Não editar por cliente.
-- `build/build.py` — leitura das planilhas + config do cliente (preencher os
-  marcadores `<<PREENCHER>>`).
+- `build/build.py` — leitura das planilhas + config do cliente (Spreadsheet IDs,
+  gids, imposto, produto principal e rótulos).
 - `.github/workflows/deploy.yml` — build + deploy no Pages.
 - `.github/workflows/deploy-worker.yml` — deploy automático do Worker da IA Insights.
 - `ia-worker/worker.js` — backend da aba IA Insights (engine, genérico).

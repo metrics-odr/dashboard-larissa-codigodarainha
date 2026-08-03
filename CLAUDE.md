@@ -1,15 +1,19 @@
-# CLAUDE.md — Dashboard de Controle de Tráfego Pago (Template · Tráfego Direto/VSL)
+# CLAUDE.md — Dashboard de Controle de Tráfego Pago · Larissa Topper (VSL Código da Rainha)
 
 > Este arquivo é lido automaticamente pelo Claude Code ao abrir o repositório.
-> Este é o **repositório template** — a engine é genérica; cada cliente novo
-> preenche os marcadores `<<PREENCHER>>` para ficar pronto.
+> Repositório **já configurado** para o cliente **Larissa Topper** (funil VSL
+> Código da Rainha). A engine (`build/template.html`, `ia-worker/worker.js`) é
+> genérica; os valores do cliente ficam em `build/build.py`.
 
 ---
 
-## ✅ CHECKLIST DE NOVO CLIENTE
+## ✅ CHECKLIST DE NOVO CLIENTE (já concluído para este cliente)
 
-Siga nesta ordem para colocar um cliente novo no ar. Cada item aponta o arquivo
-e o marcador exato a preencher.
+> Mantido como referência da engine. Para o cliente **Larissa Topper** os itens
+> 1–6 já estão preenchidos/publicados; a aba **IA Insights** (itens 7–11) depende
+> dos 4 secrets da Cloudflare/Anthropic (ver `SETUP-IA.md`).
+
+Ordem para colocar um cliente novo no ar. Cada item aponta o arquivo e o marcador.
 
 1. [ ] **Planilha do cliente** — em `build/build.py`, preencher:
    - `SPREADSHEET_ID` (ID da planilha Google Sheets)
@@ -49,8 +53,8 @@ e o marcador exato a preencher.
     `INSIGHTS_PASSWORD`, e clicar em **Salvar**.
 11. [ ] **Testar** — clicar em **Gerar insights** e confirmar que os cards aparecem.
 
-Depois de concluir, apague este checklist (ou marque tudo com `[x]`) e remova
-esta observação de "repositório template" do topo.
+Cliente configurado: **Larissa Topper** — dados preenchidos em `build/build.py`
+e publicação ativa no GitHub Pages.
 
 ---
 
@@ -61,18 +65,20 @@ via CDN) publicado no **GitHub Pages**, que cruza o gerenciador **Meta Ads** com
 de **Compradores** e se atualiza a cada ~30 min (build na nuvem via GitHub Actions,
 disparado pelo cron-job.org). **Somente leitura** das planilhas.
 
-- **URL pública:** `<<PREENCHER: URL do GitHub Pages, ex. https://SEU-USUARIO.github.io/SEU-REPO/>>`
-- **Cliente/projeto:** `<<PREENCHER: nome do cliente>>` — funil VSL/tráfego direto
+- **URL pública:** `https://eduardomezzavilla.github.io/dashboard-larissa-codigodarainha/`
+- **Cliente/projeto:** `Larissa Topper` — VSL Código da Rainha (funil VSL/tráfego direto)
 - **Tipo de funil:** VSL / tráfego direto (não há etapa de Leads/MQL)
 
 ## Fontes de dados (Google Sheets)
 
-Spreadsheet ID: `<<PREENCHER: mesmo valor de SPREADSHEET_ID em build.py>>` (leitura via export CSV).
+Neste cliente **Meta Ads e Compradores estão em planilhas separadas** (IDs
+distintos), configurados em `build.py` como `SPREADSHEET_ID_META` e
+`SPREADSHEET_ID_SALES` (leitura via export CSV).
 
-| Aba | gid | Colunas usadas |
-|-----|-----|----------------|
-| **Meta Ads** | `<<PREENCHER: gid>>` | Day · Campaign Name · Ad Set Name · Ad Name · Amount Spent · Impressions · Link Clicks · Landing Page Views · Checkouts Initiated |
-| **Compradores** | `<<PREENCHER: gid>>` | Data de Criação · Cliente / Nome · Cliente / E-mail · Produto · Valor da Venda · UTM Content · UTM Campaign · UTM Medium · Status |
+| Aba | Spreadsheet ID | gid | Colunas usadas |
+|-----|----------------|-----|----------------|
+| **Meta Ads** | `1pHqlsebgC-Or0rg9jRJZ46CKcvVc7z-q14FRmYLzEAA` | `1195145852` | Day · Campaign Name · Ad Set Name · Ad Name · Amount Spent · Impressions · Link Clicks · Landing Page Views · Checkouts Initiated |
+| **Compradores** | `1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g` | `1836439885` | Data de Criação · Cliente / Nome · Cliente / E-mail · Produto · Valor da Venda · UTM Content · UTM Campaign · UTM Medium · Status |
 
 URL de export CSV: `https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>`
 
@@ -114,10 +120,10 @@ build/template.html   # o app inteiro: CSS + JS (ENGINE — não editar por clie
 .github/workflows/deploy.yml         # roda build.py e publica no Pages
 .github/workflows/deploy-worker.yml  # publica o Worker da IA Insights (Cloudflare)
 ia-worker/worker.js    # backend da aba IA Insights (ENGINE — não editar por cliente)
-ia-worker/wrangler.toml # nome do Worker (PREENCHER por cliente)
+ia-worker/wrangler.toml # nome do Worker (larissa-codigodarainha-ia-insights)
 dist/index.html        # saída gerada (gitignored; o Actions reconstrói)
 GUIA-REPLICACAO.md     # engine explicada + solução dos problemas de publicação
-SETUP-CRON.md          # valores do cron-job.org (PREENCHER por cliente)
+SETUP-CRON.md          # valores do cron-job.org (owner/repo já preenchidos)
 SETUP-IA.md            # passo a passo da aba IA Insights
 ```
 

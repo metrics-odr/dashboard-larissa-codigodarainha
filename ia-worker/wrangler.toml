@@ -1,4 +1,4 @@
-name = "<<PREENCHER: nome do worker, ex. nomecliente-ia-insights>>"
+name = "larissa-codigodarainha-ia-insights"
 main = "worker.js"
 compatibility_date = "2026-01-01"
 

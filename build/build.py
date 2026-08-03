@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 Dashboard de Controle de Tráfego Pago — Funil VSL/tráfego direto (Meta Ads × Compradores).
-TEMPLATE — preencha os marcadores <<PREENCHER>> na seção "CONFIGURAÇÃO DO CLIENTE"
-abaixo antes de usar (veja o CHECKLIST DE NOVO CLIENTE no topo do CLAUDE.md).
+Cliente: Larissa Topper — VSL Código da Rainha. Valores do cliente na seção
+"CONFIGURAÇÃO DO CLIENTE" abaixo.
 
 Lê duas abas de uma planilha Google (export CSV público) e emite os REGISTROS
 BRUTOS (meta[] / sales[]) dentro do HTML. Todo o cálculo/filtro/gráfico roda no
@@ -30,21 +30,24 @@ from datetime import datetime, timezone, timedelta
 # ==========================================================================
 # CONFIGURAÇÃO DO CLIENTE — preencha tudo abaixo para um cliente novo
 # ==========================================================================
-SPREADSHEET_ID = "<<PREENCHER: ID da planilha Google Sheets do cliente>>"
-GID_META  = "<<PREENCHER: gid da aba Meta Ads>>"   # aba Meta Ads
-GID_SALES = "<<PREENCHER: gid da aba Compradores>>"   # aba Compradores
+# Meta Ads e Compradores ficam em PLANILHAS SEPARADAS (IDs distintos) neste cliente,
+# por isso cada aba tem seu próprio Spreadsheet ID.
+SPREADSHEET_ID_META  = "1pHqlsebgC-Or0rg9jRJZ46CKcvVc7z-q14FRmYLzEAA"
+GID_META             = "1195145852"   # aba Meta Ads
+SPREADSHEET_ID_SALES = "1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g"
+GID_SALES            = "1836439885"   # aba Compradores
 
-TAX_FACTOR = 1.0  # <<PREENCHER: fator de imposto Meta, ex. 1.13806 para +13,806%; deixe 1.0 se não houver imposto>>
+TAX_FACTOR = 1.13806  # imposto Meta: +13,806%
 
 # Produto principal do funil (base de Vendas/CAC/ConvCHK/Ticket).
 # Casamento por prefixo (sem acento, minúsculas) — inclua variantes de nome se houver.
-MAIN_PRODUCT_PREFIX = "<<PREENCHER: prefixo em minusculas e sem acento do produto principal>>"
+MAIN_PRODUCT_PREFIX = "cdr"
 
 # Rótulos exibidos na interface (lidos pelo template.html):
-CLIENT_NAME  = "<<PREENCHER: nome do cliente/projeto>>"
-CLIENT_SUB   = "<<PREENCHER: subtitulo, ex. 'Controle de Tráfego · VSL'>>"
-TAX_LABEL    = "<<PREENCHER: rotulo do toggle de imposto, ex. 'Imposto Meta ×1,XXXXX'>>"
-MAIN_PRODUCT = "<<PREENCHER: nome de exibicao do produto principal>>"
+CLIENT_NAME  = "Larissa Topper"
+CLIENT_SUB   = "VSL Código da Rainha"
+TAX_LABEL    = "Imposto Meta ×1,13806"
+MAIN_PRODUCT = "Código da Rainha"
 # ==========================================================================
 
 EXPORT_URL = "https://docs.google.com/spreadsheets/d/{sid}/export?format=csv&gid={gid}"
@@ -313,8 +316,8 @@ def main():
     ap.add_argument("--out", default="dist/index.html")
     args = ap.parse_args()
 
-    meta_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_META), args.meta_file)
-    sales_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_SALES), args.sales_file)
+    meta_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID_META, gid=GID_META), args.meta_file)
+    sales_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID_SALES, gid=GID_SALES), args.sales_file)
     data = process(meta_rows, sales_rows)
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)

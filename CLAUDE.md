@@ -71,14 +71,13 @@ disparado pelo cron-job.org). **Somente leitura** das planilhas.
 
 ## Fontes de dados (Google Sheets)
 
-Neste cliente **Meta Ads e Compradores estão em planilhas separadas** (IDs
-distintos), configurados em `build.py` como `SPREADSHEET_ID_META` e
-`SPREADSHEET_ID_SALES` (leitura via export CSV).
+Spreadsheet ID: `1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g` (as duas abas ficam
+na mesma planilha; leitura via export CSV).
 
-| Aba | Spreadsheet ID | gid | Colunas usadas |
-|-----|----------------|-----|----------------|
-| **Meta Ads** | `1pHqlsebgC-Or0rg9jRJZ46CKcvVc7z-q14FRmYLzEAA` | `1195145852` | Day · Campaign Name · Ad Set Name · Ad Name · Amount Spent · Impressions · Link Clicks · Landing Page Views · Checkouts Initiated |
-| **Compradores** | `1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g` | `1836439885` | Data de Criação · Cliente / Nome · Cliente / E-mail · Produto · Valor da Venda · UTM Content · UTM Campaign · UTM Medium · Status |
+| Aba | gid | Colunas usadas |
+|-----|-----|----------------|
+| **Meta Ads** | `1195145852` | Day · Campaign Name · Ad Set Name · Ad Name · Amount Spent · Impressions · Link Clicks · Landing Page Views · Checkouts Initiated |
+| **Compradores** | `1836439885` | Data de Criação · Cliente / Nome · Cliente / E-mail · Produto · Valor da Venda · UTM Content · UTM Campaign · UTM Medium · Status |
 
 URL de export CSV: `https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>`
 

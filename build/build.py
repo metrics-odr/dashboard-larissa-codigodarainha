@@ -30,12 +30,10 @@ from datetime import datetime, timezone, timedelta
 # ==========================================================================
 # CONFIGURAÇÃO DO CLIENTE — preencha tudo abaixo para um cliente novo
 # ==========================================================================
-# Meta Ads e Compradores ficam em PLANILHAS SEPARADAS (IDs distintos) neste cliente,
-# por isso cada aba tem seu próprio Spreadsheet ID.
-SPREADSHEET_ID_META  = "1pHqlsebgC-Or0rg9jRJZ46CKcvVc7z-q14FRmYLzEAA"
-GID_META             = "1195145852"   # aba Meta Ads
-SPREADSHEET_ID_SALES = "1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g"
-GID_SALES            = "1836439885"   # aba Compradores
+# Meta Ads e Compradores ficam na MESMA planilha (mudam só os gids).
+SPREADSHEET_ID = "1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g"
+GID_META  = "1195145852"   # aba Meta Ads
+GID_SALES = "1836439885"   # aba Compradores
 
 TAX_FACTOR = 1.13806  # imposto Meta: +13,806%
 
@@ -316,8 +314,8 @@ def main():
     ap.add_argument("--out", default="dist/index.html")
     args = ap.parse_args()
 
-    meta_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID_META, gid=GID_META), args.meta_file)
-    sales_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID_SALES, gid=GID_SALES), args.sales_file)
+    meta_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_META), args.meta_file)
+    sales_rows = load_rows(EXPORT_URL.format(sid=SPREADSHEET_ID, gid=GID_SALES), args.sales_file)
     data = process(meta_rows, sales_rows)
 
     os.makedirs(os.path.dirname(args.out) or ".", exist_ok=True)

@@ -59,7 +59,7 @@ MAIN_PRODUCT = "Código da Rainha"
 # QUALQUER visitante ver os insights já gerados sem precisar configurar nada no
 # próprio navegador; a senha continua exigida só para GERAR novos insights.
 # Copie na tela do Worker, na Cloudflare (Compute (Workers) → nome do Worker).
-IA_WORKER_URL = ""  # TODO: colar a URL do Worker (https://...workers.dev)
+IA_WORKER_URL = "https://larissa-codigodarainha-ia-insights.eduardomezzavilla.workers.dev"
 # ==========================================================================
 
 EXPORT_URL = "https://docs.google.com/spreadsheets/d/{sid}/export?format=csv&gid={gid}"

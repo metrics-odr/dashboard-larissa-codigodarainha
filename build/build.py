@@ -38,8 +38,15 @@ GID_SALES = "1836439885"   # aba Compradores
 TAX_FACTOR = 1.13806  # imposto Meta: +13,806%
 
 # Produto principal do funil (base de Vendas/CAC/ConvCHK/Ticket).
-# Casamento por prefixo (sem acento, minúsculas) — inclua variantes de nome se houver.
-MAIN_PRODUCT_PREFIX = "cdr"
+# Casamento por prefixo (sem acento, minúsculas) sobre o nome do produto na planilha.
+# O produto aparece como "Código da Rainha" -> normaliza para "codigo da rainha".
+MAIN_PRODUCT_PREFIX = "codigo da rainha"
+
+# A planilha de Compradores NÃO tem coluna de status de pagamento: "Status" é um
+# estágio de CRM ("Aberto ADV") e "Pagamento" é a bandeira do cartão (visa/pix/...).
+# Como é uma lista de COMPRADORES (toda linha = compra concretizada), contamos todas
+# as linhas como venda paga — ou seja, não filtramos pela coluna Status.
+COUNT_ALL_AS_PAID = True
 
 # Rótulos exibidos na interface (lidos pelo template.html):
 CLIENT_NAME  = "Larissa Topper"
@@ -229,13 +236,19 @@ def process(meta_rows, sales_rows):
          "name": ["cliente / nome", "nome", "full_name"],
          "email": ["cliente / e-mail", "e-mail", "email"],
          "prod": ["produto", "product"],
-         "val": ["valor da venda", "valor", "value", "amount"],
+         # Receita do funil = coluna "Faturamento" (Valor + orderbumps por comprador),
+         # por isso "faturamento" vem ANTES de "valor" nos aliases.
+         "val": ["faturamento", "valor da venda", "valor", "value", "amount"],
          "utm_content": ["utm content", "utm_content"],
          "utm_campaign": ["utm campaign", "utm_campaign"],
          "utm_medium": ["utm medium", "utm_medium"],
          "status": ["status"]},
-        {"created": 0, "name": 1, "email": 2, "prod": 3, "val": 4,
-         "utm_content": 5, "utm_campaign": 6, "utm_medium": 7, "status": 9},
+        # Fallback posicional só p/ colunas que existem nesta planilha
+        # (Produto·Nome·Email·Data·Valor·Taxas·Faturamento). Sem fallback p/
+        # utm_*/status: a planilha não tem essas colunas, então ausência -> vazio
+        # (evita casar por posição com Taxas/Faturamento). Se um dia houver colunas
+        # UTM nomeadas, o match por nome acima as detecta normalmente.
+        {"created": 3, "name": 1, "email": 2, "prod": 0, "val": 6},
     )
 
     sales = []
@@ -244,7 +257,7 @@ def process(meta_rows, sales_rows):
             continue
         if is_test_row(" ".join(str(c) for c in row)):
             continue
-        if not is_paid(cell(row, sidx["status"])):
+        if not COUNT_ALL_AS_PAID and not is_paid(cell(row, sidx["status"])):
             continue
         prod = cell(row, sidx["prod"])
         ad = cell(row, sidx["utm_content"]) or "(sem anúncio)"

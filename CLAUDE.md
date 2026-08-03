@@ -77,7 +77,19 @@ na mesma planilha; leitura via export CSV).
 | Aba | gid | Colunas usadas |
 |-----|-----|----------------|
 | **Meta Ads** | `1195145852` | Day · Campaign Name · Ad Set Name · Ad Name · Amount Spent · Impressions · Link Clicks · Landing Page Views · Checkouts Initiated |
-| **Compradores** | `1836439885` | Data de Criação · Cliente / Nome · Cliente / E-mail · Produto · Valor da Venda · UTM Content · UTM Campaign · UTM Medium · Status |
+| **Compradores** | `1836439885` | Produto · Nome · Email · Data · Valor · Taxas · **Faturamento** · Pagamento · utm_source · utm_medium · utm_content · utm_term · utm_campaign · Status · … |
+
+**Particularidades da planilha deste cliente (validadas na fonte real):**
+- **Receita = coluna `Faturamento`** (Valor + orderbumps por comprador), não `Valor`.
+  Em `build.py` o alias de `val` prioriza `faturamento`.
+- **Sem coluna de status de pagamento**: `Status` é estágio de CRM (`Aberto ADV`) e
+  `Pagamento` é a bandeira do cartão. Como é lista de compradores, `COUNT_ALL_AS_PAID = True`
+  conta todas as linhas como venda paga.
+- **Produto** = `Código da Rainha` (prefixo `codigo da rainha`).
+- **UTMs não carregam o nome do anúncio** (`utm_content = "M"`, `utm_campaign = "BR"`),
+  então as vendas **não casam** com `Ad Name` do Meta: entram nos **totais** (Vendas,
+  Faturamento, CAC, ROAS, Ticket na Visão Geral), mas o detalhamento por anúncio da aba
+  Meta Ads (que exige match UTM↔Anúncio) não popula. Limitação de rastreio, não do build.
 
 URL de export CSV: `https://docs.google.com/spreadsheets/d/<ID>/export?format=csv&gid=<GID>`
 

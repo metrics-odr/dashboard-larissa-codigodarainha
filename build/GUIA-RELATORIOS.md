@@ -1,30 +1,66 @@
 # GUIA — Geração diária dos Briefings do Gestor (aba Relatórios)
 
-> Lido pela **Routine diária (7h)** do Claude Code que regenera
+> Lido pela **Routine diária (23h59 BRT)** do Claude Code que regenera
 > `build/relatorios.json`. **Não usa a API paga da Anthropic** — roda na
-> assinatura do Claude Code (sem consumir créditos). Toda a matemática vem do
-> script `build/gerar_relatorios.py`; o Claude só **redige os textos**.
+> assinatura do Claude Code (sem consumir créditos). Toda a matemática vem de
+> `build/gerar_relatorios.py`, rodado pelo **GitHub Actions** (não pela
+> Routine — o sandbox do agente não alcança o Google Sheets); o Claude só
+> **redige os textos**.
+>
+> **Por que 23h59 e não de manhã:** rodando no fim do dia, o período "hoje"
+> é analisado com o dia **quase inteiro** de dados (não só as primeiras horas).
+> Por isso a Routine também migra o texto: o que estava em "hoje" (analisado
+> ontem à noite, já com o dia completo) vira o novo "ontem"; e escreve um
+> "hoje" novo do zero para o dia que acabou de fechar. Ver passo 4.
 
 ## O que a Routine faz (passo a passo)
 
+> **Arquitetura em 2 etapas** (o sandbox do agente não alcança
+> `docs.google.com`, só o runner do GitHub Actions alcança — ver CLAUDE.md,
+> "problemas conhecidos" #4):
+> 1. O workflow `.github/workflows/gerar-relatorios-metrics.yml` roda no
+>    GitHub Actions **~9 min antes** (23:50 BRT), busca os CSVs públicos das
+>    planilhas (`python build/gerar_relatorios.py`, sem argumentos = busca ao
+>    vivo) e commita `build/relatorios_metrics.json` na `main`. **Só números,
+>    sem IA.**
+> 2. A Routine do Claude Code (23:59 BRT) só precisa dar **pull** na `main`
+>    para já ter esse arquivo pronto — não baixa planilha nem roda script.
+
 1. **Checkout / pull** da branch de produção (`main`) já atualizada.
-2. **Baixar os dados** da planilha central via **Google Drive MCP**
-   (`download_file_content`, `fileId = 1wIKzwN2Yy32lFJCB0QHp_weF6xtX-H93f2BeZMZQo8g`,
-   `exportMimeType = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`).
-   O conteúdo vem em base64 (pode ser salvo em arquivo se for grande) — decodifique
-   para `central.xlsx`.
-3. **Calcular as métricas** de todos os períodos:
-   ```
-   python build/gerar_relatorios.py --xlsx central.xlsx --out build/relatorios_metrics.json
-   ```
-   (ou `--meta-file meta.csv --sales-file sales.csv` se já tiver os CSVs).
-   Isso NÃO escreve texto — só números. Períodos: `hoje, ontem, 3d, 7d, 14d,
-   30d, mes, mespass, todo`.
-4. **Redigir os 9 briefings** lendo `build/relatorios_metrics.json` + o
-   **Guia de interpretação** abaixo, e gravar em `build/relatorios.json`
-   (formato na última seção). Atualize `generated_at` para a data/hora BRT atual.
+2. **Confira se `build/relatorios_metrics.json` está fresco** (chave
+   `gerado_em`/`hoje` do JSON deve ser a data de hoje em BRT). Se estiver
+   desatualizado ou ausente (o workflow do passo anterior pode atrasar ou
+   falhar):
+   - Dispare o workflow manualmente (`gerar-relatorios-metrics.yml`,
+     `workflow_dispatch`, branch `main`) via GitHub MCP, aguarde a conclusão
+     (normalmente < 2 min) e dê `git pull` de novo.
+   - Se mesmo assim não atualizar, **não invente números** — pare e relate o
+     problema (não escreva os briefings com dados velhos).
+3. `build/relatorios_metrics.json` traz os números de todos os períodos
+   (`hoje, ontem, 3d, 7d, 14d, 30d, mes, mespass, todo`) — isso NÃO é texto,
+   só matemática (gerada por `build/gerar_relatorios.py`, que reaproveita
+   `build.process` — mesma fonte de verdade do site).
+4. **Migrar hoje → ontem, depois redigir os 9 briefings do zero.**
+   - Leia o `build/relatorios.json` **atual** antes de sobrescrever.
+   - Copie o `html` que está em `periodos.hoje` para dentro de `periodos.ontem`
+     (substitui o `ontem` antigo). Esse texto foi escrito no fim do dia anterior
+     com o dia já quase completo, então ele descreve bem o que agora é "ontem".
+   - Escreva um **`hoje` inteiramente novo**, do zero, analisando o dia atual
+     (agora com dados quase completos) — não reaproveite o texto antigo do `hoje`.
+   - **Reescreva também os outros 7 períodos** (`3d, 7d, 14d, 30d, mes, mespass,
+     todo`) **do zero**, a partir dos números atuais de `relatorios_metrics.json`.
+     Não copie/cole texto de execuções anteriores — releia os dados e redija de
+     novo a cada execução, mesmo que a conclusão continue parecida.
+   - Siga o **Guia de interpretação** abaixo. Atualize `generated_at` para a
+     data/hora BRT atual (`DD/MM/AAAA HH:MM`).
 5. **Commit + push** de `build/relatorios.json` na `main`. O deploy automático
    (~30 min) embute o arquivo no site; a aba passa a exibir o texto novo.
+6. **Verificação obrigatória** (uma execução anterior falhou nesse ponto sem
+   avisar ninguém): depois do push, rode `git log -1 --stat -- build/relatorios.json`
+   e confirme que o commit novo aparece com a data de hoje, e confirme `git status`
+   limpo. Se qualquer passo (leitura do metrics.json, commit, push) falhar, **não**
+   tente workarounds arriscados — pare e relate exatamente em qual passo falhou
+   e a mensagem de erro.
 
 > Se algum passo falhar, **não** apague o `relatorios.json` existente — a página
 > continua mostrando a última geração válida.
@@ -71,9 +107,21 @@ interpreta *por que* e *o que fazer*.
 
 Português, **profundo mas sem enrolação**, pouco técnico (explique quando
 necessário). Para cada período: o que aconteceu com as campanhas, leitura do
-funil (cruzando métricas), e **sugestões de corte/escala** de campanhas,
-conjuntos ou anúncios (ex.: "copiar os TOP Ads para uma CBO de escala",
-"pausar anúncio X após ~1 CAC sem venda", "escalar +20% no conjunto Y").
+funil (cruzando métricas), e **sugestões de ação** por campanha, conjunto ou
+anúncio, usando sempre uma das 4 tags abaixo:
+
+- **`Escalar`** — estrutura clara vencedora (CAC/ROAS bons e volume que já dá
+  para confiar): aumentar verba (ex.: "+20% no conjunto Y", "copiar os TOP Ads
+  para uma CBO de escala").
+- **`Otimizar`** — estrutura que converte mas tem espaço de melhoria óbvio
+  antes de escalar ou cortar (ex.: público/criativo/posicionamento a ajustar,
+  CAC no limite da meta, ConvCHK baixa com o resto do funil saudável): ação
+  concreta de ajuste, não só "aguardar".
+- **`Cortar`** — estrutura que só gasta sem retorno e já teve gasto suficiente
+  para julgar (ex.: "pausar anúncio X após ~1 CAC sem venda").
+- **`Observar`** — dado insuficiente (pouco gasto/tempo de vida) ou oscilação
+  normal de tráfego frio: aguardar mais dias antes de agir.
+
 Não invente números que não estejam no metrics JSON.
 
 ## Formato de `build/relatorios.json`
@@ -99,6 +147,8 @@ Não invente números que não estejam no metrics JSON.
 - As **chaves de período são fixas** (mesmos ids dos botões da topbar). Todas as 9
   devem existir.
 - HTML permitido no `html`: `<h3> <p> <ul> <li> <b>` e
-  `<span class="tag escala|corte|observar">…</span>` (chips coloridos de ação).
+  `<span class="tag escala|otimiza|corte|observar">Escalar|Otimizar|Cortar|Observar</span>`
+  (chips coloridos de ação — classe CSS em inglês/abreviada, texto visível em
+  português. Note que a classe de "Otimizar" é `otimiza`, não `otimizar`).
 - Se um período não tiver dados (ex.: `mespass` sem vendas no mês anterior),
   escreva um `html` curto dizendo que não houve investimento/vendas no período.

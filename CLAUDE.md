@@ -163,10 +163,12 @@ build/estilos.css          # layout/componentes (CSS não-cor)
 build/app.js               # lógica + renderização (gráficos/heatmap leem as cores via CSS vars)
 .github/workflows/deploy.yml         # roda build.py e publica no Pages
 .github/workflows/deploy-worker.yml  # publica o Worker da IA Insights (Cloudflare)
+.github/workflows/gerar-relatorios-metrics.yml # 23:50 BRT: busca as planilhas e commita relatorios_metrics.json
 ia-worker/worker.js    # backend da aba IA Insights (ENGINE — não editar por cliente)
 ia-worker/wrangler.toml # nome do Worker (larissa-codigodarainha-ia-insights)
 build/relatorios.json  # briefings do Gestor por período (aba Relatórios) — VERSIONADO
-build/gerar_relatorios.py # calcula as métricas por período (usado pela Routine diária)
+build/relatorios_metrics.json # números por período (gerado pelo Actions, lido pela Routine) — VERSIONADO
+build/gerar_relatorios.py # calcula as métricas por período (rodado pelo Actions, não pela Routine)
 build/GUIA-RELATORIOS.md  # passo a passo da Routine que regenera os briefings
 dist/index.html        # saída gerada (gitignored; o Actions reconstrói)
 GUIA-REPLICACAO.md     # engine explicada + solução dos problemas de publicação
@@ -186,10 +188,15 @@ ROAS `valor/meta`, CAC `meta/valor`).
 
 O **Briefing do Gestor** (texto interpretativo por período) é **pré-gerado por IA**
 e lido de `build/relatorios.json` — **sem chamada de API no navegador nem créditos
-da Anthropic**. É regenerado **1×/dia às 7h (BRT)** por uma **Routine do Claude
-Code** que roda `build/gerar_relatorios.py` (só matemática) e redige os textos
-seguindo `build/GUIA-RELATORIOS.md`, commitando o JSON. Se o JSON não existir, a
-aba mostra tudo menos o briefing (cards/tabelas seguem funcionando).
+da Anthropic**. Regeneração em **2 etapas diárias** (o sandbox do agente não alcança
+o Google Sheets, só o runner do GitHub Actions — ver "problemas conhecidos" #4):
+**23:50 BRT** o workflow `gerar-relatorios-metrics.yml` busca as planilhas e commita
+`build/relatorios_metrics.json` (só números); **23:59 BRT** uma **Routine do
+Claude Code** lê esse arquivo, migra o texto que estava em "hoje" para "ontem" e
+redige os 9 briefings do zero seguindo `build/GUIA-RELATORIOS.md`, commitando
+`relatorios.json`. Rodar no fim do dia (não de manhã) garante que "hoje" seja
+analisado com o dia quase completo. Se o JSON não existir, a aba mostra tudo
+menos o briefing (cards/tabelas seguem funcionando).
 
 O `build.py` **não agrega**: exporta as linhas cruas e toda a lógica (filtros, KPIs,
 tabelas, gráficos, heatmap, imposto, tema) roda no navegador.

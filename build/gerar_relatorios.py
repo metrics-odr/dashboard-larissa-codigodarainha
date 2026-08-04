@@ -3,7 +3,7 @@
 """
 Auxiliar da aba RELATÓRIOS — calcula as MÉTRICAS por período do funil.
 
-Uso pela Routine diária (1×/dia às 7h) que regenera os briefings do Gestor:
+Uso pela Routine diária (1×/dia às 23h59 BRT) que regenera os briefings do Gestor:
 este script NÃO escreve texto e NÃO chama nenhuma IA/API. Ele só faz a
 matemática (fonte única de verdade, reaproveitando build.process) e emite um
 JSON com os números de cada período. A Routine (Claude Code, via assinatura,
@@ -195,11 +195,11 @@ def main():
         sales_file = os.path.join(base, "_sales_tmp.csv")
         extract_xlsx(args.xlsx, meta_file, sales_file)
 
-    if not meta_file or not sales_file:
-        raise SystemExit("Informe --meta-file e --sales-file, ou --xlsx.")
-
-    meta_rows = build.read_csv_file(meta_file)
-    sales_rows = build.read_csv_file(sales_file)
+    # Sem --meta-file/--sales-file/--xlsx: busca ao vivo via CSV público do
+    # Google Sheets (mesmo caminho do build.py) — usado pelo GitHub Actions,
+    # que alcança docs.google.com (o sandbox do agente não alcança).
+    meta_rows = build.load_rows(build.EXPORT_URL.format(sid=build.SPREADSHEET_ID, gid=build.GID_META), meta_file)
+    sales_rows = build.load_rows(build.EXPORT_URL.format(sid=build.SPREADSHEET_ID, gid=build.GID_SALES), sales_file)
     data = build.process(meta_rows, sales_rows)
     meta, sales, B = data["meta"], data["sales"], data["build"]
     tax = B["tax_factor"]  # imposto Meta aplicado (mesmo default da UI: ON)

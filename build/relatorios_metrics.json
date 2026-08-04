@@ -1,0 +1,1635 @@
+{
+  "gerado_em": "04/08/2026 10:00",
+  "hoje": "2026-08-04",
+  "periodo_dados": {
+    "de": "2026-07-31",
+    "ate": "2026-08-04"
+  },
+  "metas": {
+    "cac": 165.0,
+    "roas": 2.0
+  },
+  "ticket_medio_geral": 325.67,
+  "periodos": {
+    "hoje": {
+      "de": "2026-08-04",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 231.88,
+        "impr": 1678.0,
+        "cliques": 47.0,
+        "pv": 38.0,
+        "ck": 2.0,
+        "vendas": 1,
+        "fat": 297.0,
+        "cpm": 138.19,
+        "ctr": 0.028,
+        "cpc": 4.93,
+        "cpv": 6.1,
+        "cr": 0.8085,
+        "cpic": 115.94,
+        "vischk": 0.0526,
+        "convchk": 0.5,
+        "convlp": 0.0263,
+        "cac": 231.88,
+        "roas": 1.28,
+        "ticket": 297.0
+      },
+      "ads": {
+        "gasto": 231.88,
+        "impr": 1678.0,
+        "cliques": 47.0,
+        "pv": 38.0,
+        "ck": 2.0,
+        "vendas": 1,
+        "fat": 297.0,
+        "cpm": 138.19,
+        "ctr": 0.028,
+        "cpc": 4.93,
+        "cpv": 6.1,
+        "cr": 0.8085,
+        "cpic": 115.94,
+        "vischk": 0.0526,
+        "convchk": 0.5,
+        "convlp": 0.0263,
+        "cac": 231.88,
+        "roas": 1.28,
+        "ticket": 297.0
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 133.05,
+          "impr": 938.0,
+          "cliques": 33.0,
+          "pv": 29.0,
+          "ck": 2.0,
+          "vendas": 1,
+          "fat": 297.0,
+          "cpm": 141.84,
+          "ctr": 0.0352,
+          "cpc": 4.03,
+          "cpv": 4.59,
+          "cr": 0.8788,
+          "cpic": 66.53,
+          "vischk": 0.069,
+          "convchk": 0.5,
+          "convlp": 0.0345,
+          "cac": 133.05,
+          "roas": 2.23,
+          "ticket": 297.0
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 98.61,
+          "impr": 734.0,
+          "cliques": 14.0,
+          "pv": 9.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 134.35,
+          "ctr": 0.0191,
+          "cpc": 7.04,
+          "cpv": 10.96,
+          "cr": 0.6429,
+          "cpic": null,
+          "vischk": 0.0,
+          "convchk": null,
+          "convlp": 0.0,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.22,
+          "impr": 6.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 36.04,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD01",
+          "gasto": 125.61,
+          "vendas": 1,
+          "cac": 125.61,
+          "roas": 2.36
+        },
+        {
+          "nome": "AD07",
+          "gasto": 7.52,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD10",
+          "gasto": 58.1,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD02",
+          "gasto": 2.99,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD06",
+          "gasto": 10.63,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD14",
+          "gasto": 6.68,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD13",
+          "gasto": 14.0,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD12",
+          "gasto": 6.35,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "ontem": {
+      "de": "2026-08-03",
+      "ate": "2026-08-03",
+      "total": {
+        "gasto": 807.82,
+        "impr": 9722.0,
+        "cliques": 261.0,
+        "pv": 250.0,
+        "ck": 9.0,
+        "vendas": 7,
+        "fat": 2262.47,
+        "cpm": 83.09,
+        "ctr": 0.0268,
+        "cpc": 3.1,
+        "cpv": 3.23,
+        "cr": 0.9579,
+        "cpic": 89.76,
+        "vischk": 0.036,
+        "convchk": 0.6667,
+        "convlp": 0.024,
+        "cac": 115.4,
+        "roas": 2.8,
+        "ticket": 323.21
+      },
+      "ads": {
+        "gasto": 807.82,
+        "impr": 9722.0,
+        "cliques": 261.0,
+        "pv": 250.0,
+        "ck": 9.0,
+        "vendas": 6,
+        "fat": 1938.71,
+        "cpm": 83.09,
+        "ctr": 0.0268,
+        "cpc": 3.1,
+        "cpv": 3.23,
+        "cr": 0.9579,
+        "cpic": 89.76,
+        "vischk": 0.036,
+        "convchk": 0.6667,
+        "convlp": 0.024,
+        "cac": 134.64,
+        "roas": 2.4,
+        "ticket": 323.12
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 421.42,
+          "impr": 5103.0,
+          "cliques": 139.0,
+          "pv": 131.0,
+          "ck": 5.0,
+          "vendas": 3,
+          "fat": 994.19,
+          "cpm": 82.58,
+          "ctr": 0.0272,
+          "cpc": 3.03,
+          "cpv": 3.22,
+          "cr": 0.9424,
+          "cpic": 84.28,
+          "vischk": 0.0382,
+          "convchk": 0.6,
+          "convlp": 0.0229,
+          "cac": 140.47,
+          "roas": 2.36,
+          "ticket": 331.4
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 385.71,
+          "impr": 4587.0,
+          "cliques": 122.0,
+          "pv": 119.0,
+          "ck": 4.0,
+          "vendas": 3,
+          "fat": 944.52,
+          "cpm": 84.09,
+          "ctr": 0.0266,
+          "cpc": 3.16,
+          "cpv": 3.24,
+          "cr": 0.9754,
+          "cpic": 96.43,
+          "vischk": 0.0336,
+          "convchk": 0.75,
+          "convlp": 0.0252,
+          "cac": 128.57,
+          "roas": 2.45,
+          "ticket": 314.84
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.68,
+          "impr": 32.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 21.34,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 48.33,
+          "vendas": 2,
+          "cac": 24.17,
+          "roas": 13.4
+        },
+        {
+          "nome": "AD10",
+          "gasto": 118.29,
+          "vendas": 1,
+          "cac": 118.29,
+          "roas": 2.93
+        },
+        {
+          "nome": "AD13",
+          "gasto": 132.72,
+          "vendas": 1,
+          "cac": 132.72,
+          "roas": 2.64
+        },
+        {
+          "nome": "AD01",
+          "gasto": 309.59,
+          "vendas": 2,
+          "cac": 154.79,
+          "roas": 1.92
+        },
+        {
+          "nome": "AD12",
+          "gasto": 48.96,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD14",
+          "gasto": 48.97,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD06",
+          "gasto": 55.15,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD02",
+          "gasto": 45.81,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "3d": {
+      "de": "2026-08-02",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 2199.46,
+        "impr": 30837.0,
+        "cliques": 762.0,
+        "pv": 736.0,
+        "ck": 29.0,
+        "vendas": 10,
+        "fat": 3206.99,
+        "cpm": 71.33,
+        "ctr": 0.0247,
+        "cpc": 2.89,
+        "cpv": 2.99,
+        "cr": 0.9659,
+        "cpic": 75.84,
+        "vischk": 0.0394,
+        "convchk": 0.3103,
+        "convlp": 0.0122,
+        "cac": 219.95,
+        "roas": 1.46,
+        "ticket": 320.7
+      },
+      "ads": {
+        "gasto": 2199.46,
+        "impr": 30837.0,
+        "cliques": 762.0,
+        "pv": 736.0,
+        "ck": 29.0,
+        "vendas": 9,
+        "fat": 2883.23,
+        "cpm": 71.33,
+        "ctr": 0.0247,
+        "cpc": 2.89,
+        "cpv": 2.99,
+        "cr": 0.9659,
+        "cpic": 75.84,
+        "vischk": 0.0394,
+        "convchk": 0.3103,
+        "convlp": 0.0122,
+        "cac": 244.38,
+        "roas": 1.31,
+        "ticket": 320.36
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 1679.8,
+          "impr": 25274.0,
+          "cliques": 607.0,
+          "pv": 588.0,
+          "ck": 23.0,
+          "vendas": 5,
+          "fat": 1641.71,
+          "cpm": 66.46,
+          "ctr": 0.024,
+          "cpc": 2.77,
+          "cpv": 2.86,
+          "cr": 0.9687,
+          "cpic": 73.03,
+          "vischk": 0.0391,
+          "convchk": 0.2174,
+          "convlp": 0.0085,
+          "cac": 335.96,
+          "roas": 0.98,
+          "ticket": 328.34
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 148.47,
+          "vendas": 2,
+          "cac": 74.24,
+          "roas": 4.36
+        },
+        {
+          "nome": "AD13",
+          "gasto": 238.21,
+          "vendas": 2,
+          "cac": 119.1,
+          "roas": 2.72
+        },
+        {
+          "nome": "AD10",
+          "gasto": 345.87,
+          "vendas": 2,
+          "cac": 172.93,
+          "roas": 2.02
+        },
+        {
+          "nome": "AD01",
+          "gasto": 556.12,
+          "vendas": 3,
+          "cac": 185.37,
+          "roas": 1.6
+        },
+        {
+          "nome": "AD02",
+          "gasto": 132.33,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD08",
+          "gasto": 75.09,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 62.65,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 67.46,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 65.06,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD04",
+          "gasto": 78.56,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "7d": {
+      "de": "2026-07-29",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 19,
+        "fat": 6187.71,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 190.56,
+        "roas": 1.71,
+        "ticket": 325.67
+      },
+      "ads": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 18,
+        "fat": 5863.95,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 201.15,
+        "roas": 1.62,
+        "ticket": 325.78
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 3101.05,
+          "impr": 47102.0,
+          "cliques": 1130.0,
+          "pv": 1083.0,
+          "ck": 40.0,
+          "vendas": 14,
+          "fat": 4622.43,
+          "cpm": 65.84,
+          "ctr": 0.024,
+          "cpc": 2.74,
+          "cpv": 2.86,
+          "cr": 0.9584,
+          "cpic": 77.53,
+          "vischk": 0.0369,
+          "convchk": 0.35,
+          "convlp": 0.0129,
+          "cac": 221.5,
+          "roas": 1.49,
+          "ticket": 330.17
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 250.05,
+          "vendas": 3,
+          "cac": 83.35,
+          "roas": 3.78
+        },
+        {
+          "nome": "AD10",
+          "gasto": 494.34,
+          "vendas": 5,
+          "cac": 98.87,
+          "roas": 3.43
+        },
+        {
+          "nome": "AD01",
+          "gasto": 657.88,
+          "vendas": 5,
+          "cac": 131.58,
+          "roas": 2.36
+        },
+        {
+          "nome": "AD13",
+          "gasto": 339.92,
+          "vendas": 2,
+          "cac": 169.96,
+          "roas": 1.9
+        },
+        {
+          "nome": "AD14",
+          "gasto": 245.05,
+          "vendas": 1,
+          "cac": 245.05,
+          "roas": 1.43
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD11",
+          "gasto": 52.64,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 176.75,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 164.4,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 169.14,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 166.63,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "14d": {
+      "de": "2026-07-22",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 19,
+        "fat": 6187.71,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 190.56,
+        "roas": 1.71,
+        "ticket": 325.67
+      },
+      "ads": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 18,
+        "fat": 5863.95,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 201.15,
+        "roas": 1.62,
+        "ticket": 325.78
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 3101.05,
+          "impr": 47102.0,
+          "cliques": 1130.0,
+          "pv": 1083.0,
+          "ck": 40.0,
+          "vendas": 14,
+          "fat": 4622.43,
+          "cpm": 65.84,
+          "ctr": 0.024,
+          "cpc": 2.74,
+          "cpv": 2.86,
+          "cr": 0.9584,
+          "cpic": 77.53,
+          "vischk": 0.0369,
+          "convchk": 0.35,
+          "convlp": 0.0129,
+          "cac": 221.5,
+          "roas": 1.49,
+          "ticket": 330.17
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 250.05,
+          "vendas": 3,
+          "cac": 83.35,
+          "roas": 3.78
+        },
+        {
+          "nome": "AD10",
+          "gasto": 494.34,
+          "vendas": 5,
+          "cac": 98.87,
+          "roas": 3.43
+        },
+        {
+          "nome": "AD01",
+          "gasto": 657.88,
+          "vendas": 5,
+          "cac": 131.58,
+          "roas": 2.36
+        },
+        {
+          "nome": "AD13",
+          "gasto": 339.92,
+          "vendas": 2,
+          "cac": 169.96,
+          "roas": 1.9
+        },
+        {
+          "nome": "AD14",
+          "gasto": 245.05,
+          "vendas": 1,
+          "cac": 245.05,
+          "roas": 1.43
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD11",
+          "gasto": 52.64,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 176.75,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 164.4,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 169.14,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 166.63,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "30d": {
+      "de": "2026-07-06",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 19,
+        "fat": 6187.71,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 190.56,
+        "roas": 1.71,
+        "ticket": 325.67
+      },
+      "ads": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 18,
+        "fat": 5863.95,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 201.15,
+        "roas": 1.62,
+        "ticket": 325.78
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 3101.05,
+          "impr": 47102.0,
+          "cliques": 1130.0,
+          "pv": 1083.0,
+          "ck": 40.0,
+          "vendas": 14,
+          "fat": 4622.43,
+          "cpm": 65.84,
+          "ctr": 0.024,
+          "cpc": 2.74,
+          "cpv": 2.86,
+          "cr": 0.9584,
+          "cpic": 77.53,
+          "vischk": 0.0369,
+          "convchk": 0.35,
+          "convlp": 0.0129,
+          "cac": 221.5,
+          "roas": 1.49,
+          "ticket": 330.17
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 250.05,
+          "vendas": 3,
+          "cac": 83.35,
+          "roas": 3.78
+        },
+        {
+          "nome": "AD10",
+          "gasto": 494.34,
+          "vendas": 5,
+          "cac": 98.87,
+          "roas": 3.43
+        },
+        {
+          "nome": "AD01",
+          "gasto": 657.88,
+          "vendas": 5,
+          "cac": 131.58,
+          "roas": 2.36
+        },
+        {
+          "nome": "AD13",
+          "gasto": 339.92,
+          "vendas": 2,
+          "cac": 169.96,
+          "roas": 1.9
+        },
+        {
+          "nome": "AD14",
+          "gasto": 245.05,
+          "vendas": 1,
+          "cac": 245.05,
+          "roas": 1.43
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD11",
+          "gasto": 52.64,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 176.75,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 164.4,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 169.14,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 166.63,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "mes": {
+      "de": "2026-08-01",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 2922.82,
+        "impr": 43725.0,
+        "cliques": 1051.0,
+        "pv": 1009.0,
+        "ck": 39.0,
+        "vendas": 14,
+        "fat": 4555.55,
+        "cpm": 66.85,
+        "ctr": 0.024,
+        "cpc": 2.78,
+        "cpv": 2.9,
+        "cr": 0.96,
+        "cpic": 74.94,
+        "vischk": 0.0387,
+        "convchk": 0.3333,
+        "convlp": 0.0129,
+        "cac": 208.77,
+        "roas": 1.56,
+        "ticket": 325.4
+      },
+      "ads": {
+        "gasto": 2922.82,
+        "impr": 43725.0,
+        "cliques": 1051.0,
+        "pv": 1009.0,
+        "ck": 39.0,
+        "vendas": 13,
+        "fat": 4231.79,
+        "cpm": 66.85,
+        "ctr": 0.024,
+        "cpc": 2.78,
+        "cpv": 2.9,
+        "cr": 0.96,
+        "cpic": 74.94,
+        "vischk": 0.0387,
+        "convchk": 0.3333,
+        "convlp": 0.0129,
+        "cac": 224.83,
+        "roas": 1.45,
+        "ticket": 325.52
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 2403.16,
+          "impr": 38162.0,
+          "cliques": 896.0,
+          "pv": 861.0,
+          "ck": 33.0,
+          "vendas": 9,
+          "fat": 2990.27,
+          "cpm": 62.97,
+          "ctr": 0.0235,
+          "cpc": 2.68,
+          "cpv": 2.79,
+          "cr": 0.9609,
+          "cpic": 72.82,
+          "vischk": 0.0383,
+          "convchk": 0.2727,
+          "convlp": 0.0105,
+          "cac": 267.02,
+          "roas": 1.24,
+          "ticket": 332.25
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 208.21,
+          "vendas": 3,
+          "cac": 69.4,
+          "roas": 4.54
+        },
+        {
+          "nome": "AD10",
+          "gasto": 438.51,
+          "vendas": 4,
+          "cac": 109.63,
+          "roas": 3.19
+        },
+        {
+          "nome": "AD13",
+          "gasto": 295.93,
+          "vendas": 2,
+          "cac": 147.96,
+          "roas": 2.19
+        },
+        {
+          "nome": "AD06",
+          "gasto": 192.0,
+          "vendas": 1,
+          "cac": 192.0,
+          "roas": 1.83
+        },
+        {
+          "nome": "AD01",
+          "gasto": 606.06,
+          "vendas": 3,
+          "cac": 202.02,
+          "roas": 1.47
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD11",
+          "gasto": 8.49,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 124.71,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 116.39,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 110.78,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 118.48,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "mespass": {
+      "de": "2026-07-01",
+      "ate": "2026-07-31",
+      "total": {
+        "gasto": 697.89,
+        "impr": 8940.0,
+        "cliques": 234.0,
+        "pv": 222.0,
+        "ck": 7.0,
+        "vendas": 5,
+        "fat": 1632.16,
+        "cpm": 78.06,
+        "ctr": 0.0262,
+        "cpc": 2.98,
+        "cpv": 3.14,
+        "cr": 0.9487,
+        "cpic": 99.7,
+        "vischk": 0.0315,
+        "convchk": 0.7143,
+        "convlp": 0.0225,
+        "cac": 139.58,
+        "roas": 2.34,
+        "ticket": 326.43
+      },
+      "ads": {
+        "gasto": 697.89,
+        "impr": 8940.0,
+        "cliques": 234.0,
+        "pv": 222.0,
+        "ck": 7.0,
+        "vendas": 5,
+        "fat": 1632.16,
+        "cpm": 78.06,
+        "ctr": 0.0262,
+        "cpc": 2.98,
+        "cpv": 3.14,
+        "cr": 0.9487,
+        "cpic": 99.7,
+        "vischk": 0.0315,
+        "convchk": 0.7143,
+        "convlp": 0.0225,
+        "cac": 139.58,
+        "roas": 2.34,
+        "ticket": 326.43
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 697.89,
+          "impr": 8940.0,
+          "cliques": 234.0,
+          "pv": 222.0,
+          "ck": 7.0,
+          "vendas": 5,
+          "fat": 1632.16,
+          "cpm": 78.06,
+          "ctr": 0.0262,
+          "cpc": 2.98,
+          "cpv": 3.14,
+          "cr": 0.9487,
+          "cpic": 99.7,
+          "vischk": 0.0315,
+          "convchk": 0.7143,
+          "convlp": 0.0225,
+          "cac": 139.58,
+          "roas": 2.34,
+          "ticket": 326.43
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD01",
+          "gasto": 51.82,
+          "vendas": 2,
+          "cac": 25.91,
+          "roas": 12.75
+        },
+        {
+          "nome": "AD02",
+          "gasto": 47.22,
+          "vendas": 1,
+          "cac": 47.22,
+          "roas": 6.86
+        },
+        {
+          "nome": "AD14",
+          "gasto": 53.74,
+          "vendas": 1,
+          "cac": 53.74,
+          "roas": 6.52
+        },
+        {
+          "nome": "AD10",
+          "gasto": 55.83,
+          "vendas": 1,
+          "cac": 55.83,
+          "roas": 5.32
+        },
+        {
+          "nome": "AD07",
+          "gasto": 41.85,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD13",
+          "gasto": 43.99,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD12",
+          "gasto": 47.45,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 48.01,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 52.04,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD11",
+          "gasto": 44.15,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    },
+    "todo": {
+      "de": "2026-07-31",
+      "ate": "2026-08-04",
+      "total": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 19,
+        "fat": 6187.71,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 190.56,
+        "roas": 1.71,
+        "ticket": 325.67
+      },
+      "ads": {
+        "gasto": 3620.72,
+        "impr": 52665.0,
+        "cliques": 1285.0,
+        "pv": 1231.0,
+        "ck": 46.0,
+        "vendas": 18,
+        "fat": 5863.95,
+        "cpm": 68.75,
+        "ctr": 0.0244,
+        "cpc": 2.82,
+        "cpv": 2.94,
+        "cr": 0.958,
+        "cpic": 78.71,
+        "vischk": 0.0374,
+        "convchk": 0.3913,
+        "convlp": 0.0146,
+        "cac": 201.15,
+        "roas": 1.62,
+        "ticket": 325.78
+      },
+      "campanhas": [
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | ABO | 2026-07-31 | Teste de criativos",
+          "gasto": 3101.05,
+          "impr": 47102.0,
+          "cliques": 1130.0,
+          "pv": 1083.0,
+          "ck": 40.0,
+          "vendas": 14,
+          "fat": 4622.43,
+          "cpm": 65.84,
+          "ctr": 0.024,
+          "cpc": 2.74,
+          "cpv": 2.86,
+          "cr": 0.9584,
+          "cpic": 77.53,
+          "vischk": 0.0369,
+          "convchk": 0.35,
+          "convlp": 0.0129,
+          "cac": 221.5,
+          "roas": 1.49,
+          "ticket": 330.17
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Pre-escala",
+          "gasto": 518.76,
+          "impr": 5525.0,
+          "cliques": 155.0,
+          "pv": 148.0,
+          "ck": 6.0,
+          "vendas": 4,
+          "fat": 1241.52,
+          "cpm": 93.89,
+          "ctr": 0.0281,
+          "cpc": 3.35,
+          "cpv": 3.51,
+          "cr": 0.9548,
+          "cpic": 86.46,
+          "vischk": 0.0405,
+          "convchk": 0.6667,
+          "convlp": 0.027,
+          "cac": 129.69,
+          "roas": 2.39,
+          "ticket": 310.38
+        },
+        {
+          "nome": "CDR | E4-VEN | P2-FRIO | VND | CBO | 2026-08-03 | Bidcap",
+          "gasto": 0.9,
+          "impr": 38.0,
+          "cliques": 0.0,
+          "pv": 0.0,
+          "ck": 0.0,
+          "vendas": 0,
+          "fat": 0.0,
+          "cpm": 23.66,
+          "ctr": 0.0,
+          "cpc": null,
+          "cpv": null,
+          "cr": null,
+          "cpic": null,
+          "vischk": null,
+          "convchk": null,
+          "convlp": null,
+          "cac": null,
+          "roas": 0.0,
+          "ticket": null
+        }
+      ],
+      "top_anuncios": [
+        {
+          "nome": "AD07",
+          "gasto": 250.05,
+          "vendas": 3,
+          "cac": 83.35,
+          "roas": 3.78
+        },
+        {
+          "nome": "AD10",
+          "gasto": 494.34,
+          "vendas": 5,
+          "cac": 98.87,
+          "roas": 3.43
+        },
+        {
+          "nome": "AD01",
+          "gasto": 657.88,
+          "vendas": 5,
+          "cac": 131.58,
+          "roas": 2.36
+        },
+        {
+          "nome": "AD13",
+          "gasto": 339.92,
+          "vendas": 2,
+          "cac": 169.96,
+          "roas": 1.9
+        },
+        {
+          "nome": "AD14",
+          "gasto": 245.05,
+          "vendas": 1,
+          "cac": 245.05,
+          "roas": 1.43
+        }
+      ],
+      "piores_anuncios": [
+        {
+          "nome": "AD11",
+          "gasto": 52.64,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD08",
+          "gasto": 176.75,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD09",
+          "gasto": 164.4,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD05",
+          "gasto": 169.14,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        },
+        {
+          "nome": "AD03",
+          "gasto": 166.63,
+          "vendas": 0,
+          "cac": null,
+          "roas": 0.0
+        }
+      ]
+    }
+  }
+}

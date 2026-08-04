@@ -267,6 +267,7 @@
   .rel-brief b{color:var(--ink)}
   .rel-brief .tag{display:inline-block; font-size:11px; font-weight:700; padding:1px 8px; border-radius:999px; margin-right:6px}
   .rel-brief .tag.escala{color:var(--good); background:color-mix(in srgb,var(--good) 14%,transparent)}
+  .rel-brief .tag.otimiza{color:var(--accent-blue); background:color-mix(in srgb,var(--accent-blue) 14%,transparent)}
   .rel-brief .tag.corte{color:var(--bad); background:color-mix(in srgb,var(--bad) 14%,transparent)}
   .rel-brief .tag.observar{color:var(--yellow); background:color-mix(in srgb,var(--yellow) 16%,transparent)}
   .rel-brief-empty{color:var(--muted); font-size:13px}

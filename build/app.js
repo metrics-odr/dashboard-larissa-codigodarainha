@@ -471,9 +471,9 @@ function relBriefKey(){ if(STATE.selDays.size) return null; return STATE.preset|
 function renderRelBrief(){
   const wrap=document.getElementById('relBrief'), stampEl=document.getElementById('relBriefStamp');
   const bf=DATA.briefings||{}, per=bf.periodos||{}, key=relBriefKey();
-  stampEl.textContent = bf.generated_at ? `Briefing gerado por IA · última atualização ${bf.generated_at} · atualiza 1×/dia às 7h` : '';
+  stampEl.textContent = bf.generated_at ? `Briefing gerado por IA · última atualização ${bf.generated_at} · atualiza 1×/dia às 23h59` : '';
   if(!Object.keys(per).length){
-    wrap.innerHTML='<div class="rel-brief-empty">O briefing por IA ainda não foi gerado. Ele é atualizado automaticamente 1×/dia às 7h.</div>'; return; }
+    wrap.innerHTML='<div class="rel-brief-empty">O briefing por IA ainda não foi gerado. Ele é atualizado automaticamente 1×/dia às 23h59.</div>'; return; }
   if(!key || !per[key]){
     wrap.innerHTML='<div class="rel-brief-empty">Briefing disponível para os períodos predefinidos (Hoje, Ontem, 3&nbsp;dias, 7&nbsp;dias, 14&nbsp;dias, 30&nbsp;dias, Este mês, Mês passado, Todo período). Selecione um desses botões no topo.</div>'; return; }
   const item=per[key];

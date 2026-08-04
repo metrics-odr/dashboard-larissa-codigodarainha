@@ -15,7 +15,8 @@ const intf=v=>(v==null||!isFinite(v))?'-':nf0.format(v);
 const numf=v=>(v==null||!isFinite(v))?'-':nf1.format(v);
 const roasf=v=>(v==null||!isFinite(v))?'-':nf1.format(v)+'x';
 const dimf=v=>v==null?'-':String(v);
-const norm=s=>(s==null?'':String(s)).trim().toLowerCase();
+/* remove acentos p/ casar com o norm() do build.py (unicodedata NFKD) */
+const norm=s=>(s==null?'':String(s)).normalize('NFKD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
 const isMainProd=p=>norm(p).startsWith(MAIN_PREFIX);
 const brdate=d=>{ if(!d) return '-'; const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0]; };
 const WD=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -226,25 +227,26 @@ function hbar(id, items, valFn, color, top, fmtFn){
       scales:{x:{beginAtZero:true,ticks:{color:mut,font:{size:9}},grid:{color:cgrid()}},
               y:{ticks:{color:mut,font:{size:9}},grid:{display:false}}}}});
 }
-/* CAC por campanha, por dia (uma linha por campanha) */
-function campCacChart(id, fM, fS){
+/* CAC por dia, por item de uma dimensão (campanha/conjunto/anúncio) - 1 linha por item.
+   `dim` = 'camp' | 'adset' | 'ad'; usa os mesmos dados escopados da tabela acima. */
+function cacDimChart(id, fM, fS, dim){
   destroy(id); const el=document.getElementById(id); if(!el) return;
-  const spendTot={}; fM.forEach(r=>spendTot[r.camp]=(spendTot[r.camp]||0)+r.sp);
-  const camps=Object.keys(spendTot).sort((a,b)=>spendTot[b]-spendTot[a]).slice(0,6);
+  const spendTot={}; fM.forEach(r=>spendTot[r[dim]]=(spendTot[r[dim]]||0)+r.sp);
+  const items=Object.keys(spendTot).sort((a,b)=>spendTot[b]-spendTot[a]).slice(0,6);
   const dset=new Set(); fM.forEach(r=>r.d&&dset.add(r.d)); fS.forEach(r=>r.d&&dset.add(r.d));
   const days=[...dset].sort();
-  const K=(c,dd)=>c+''+dd, sp={}, vd={};
-  fM.forEach(r=>{if(!r.d)return; sp[K(r.camp,r.d)]=(sp[K(r.camp,r.d)]||0)+r.sp;});
-  fS.forEach(r=>{if(!r.d)return; vd[K(r.camp,r.d)]=(vd[K(r.camp,r.d)]||0)+r.main;});
+  const K=(c,dd)=>c+'\u0001'+dd, sp={}, vd={};
+  fM.forEach(r=>{if(!r.d)return; sp[K(r[dim],r.d)]=(sp[K(r[dim],r.d)]||0)+r.sp;});
+  fS.forEach(r=>{if(!r.d)return; vd[K(r[dim],r.d)]=(vd[K(r[dim],r.d)]||0)+r.main;});
   const PAL=chartPalette();
-  const ds=camps.map((c,i)=>({label:c.length>22?c.slice(0,22)+'…':c,
+  const ds=items.map((c,i)=>({label:c.length>22?c.slice(0,22)+'…':c,
     data:days.map(dd=>{const s=(sp[K(c,dd)]||0)*taxf(), v=vd[K(c,dd)]||0; return v?+(s/v).toFixed(2):null;}),
     borderColor:PAL[i%PAL.length],backgroundColor:PAL[i%PAL.length],borderWidth:2,pointRadius:1.5,spanGaps:true,tension:.25}));
   const mut=cmuted();
   charts[id]=new Chart(el,{type:'line',data:{labels:days.map(x=>x.slice(5)),datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
       plugins:{legend:{labels:{color:cink(),boxWidth:8,font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+brl(c.raw)}}},
-      scales:{x:{ticks:{color:mut,font:{size:9}},grid:{display:false}},y:{ticks:{color:mut,font:{size:9},callback:v=>brl(v)},grid:{color:cgrid()},beginAtZero:true}}}});
+      scales:{x:{ticks:{color:mut,font:{size:9},maxRotation:0,autoSkip:true,autoSkipPadding:8},grid:{display:false}},y:{ticks:{color:mut,font:{size:9},callback:v=>brl(v)},grid:{color:cgrid()},beginAtZero:true}}}});
 }
 
 /* ---------------- KPI cards ---------------- */
@@ -412,7 +414,10 @@ function renderMeta(){
   renderTable({id:'tAd', cols:HCOLS.map((c,i)=>i===0?{...c,label:'Anúncio'}:c), rows:hierRows(buildAgg(Sd.fS,Sd.fM,'ad')), total:totRowOf(totals(Sd.fS,Sd.fM)),
     selectable:true, selSet:STATE.mSelAd, onSelect:(k,e)=>selDim('D',k,e&&(e.ctrlKey||e.metaKey))});
 
-  campCacChart('chCamp', fM, fS); campCacChart('chAdset', fM, fS); campCacChart('chAd', fM, fS);
+  /* cada gráfico segue a dimensão da tabela acima (mesmos dados escopados) */
+  cacDimChart('chCamp', Sc.fM, Sc.fS, 'camp');
+  cacDimChart('chAdset', Sa.fM, Sa.fS, 'adset');
+  cacDimChart('chAd', Sd.fM, Sd.fS, 'ad');
 
   const vendas=fS.reduce((s,r)=>s+r.main,0);
   document.getElementById('qCount').textContent=vendas+' vendas · '+fS.length+' linhas';
@@ -692,15 +697,83 @@ const PRESETS=[
   ['30d','30 dias',()=>[addDays(TODAY,-29),TODAY]],
   ['mes','Este mês',()=>{const [y,m]=TODAY.split('-');return [`${y}-${m}-01`,TODAY];}],
   ['mespass','Mês passado',()=>{const dt=new Date(TODAY+'T00:00:00');const f=new Date(dt.getFullYear(),dt.getMonth()-1,1);const l=new Date(dt.getFullYear(),dt.getMonth(),0);return [dstr(f),dstr(l)];}],
-  ['todo','Todo período',()=>[B.date_min,B.date_max]],
+  ['todo','Máximo',()=>[B.date_min,B.date_max]],
 ];
-function renderPresets(){
-  document.getElementById('presets').innerHTML=PRESETS.map(p=>`<button class="chip ${STATE.preset===p[0]?'active':''}" data-p="${p[0]}">${p[1]}</button>`).join('');
-  document.querySelectorAll('#presets .chip').forEach(c=>c.addEventListener('click',()=>{ applyPreset(c.dataset.p); }));
+/* rótulo do botão de período — mostra o intervalo aplicado dentro do próprio botão */
+function syncDateInputs(){
+  const el=document.getElementById('periodBtnLabel'); if(!el) return;
+  if(STATE.selDays.size){ el.textContent=STATE.selDays.size+(STATE.selDays.size>1?' dias selecionados':' dia selecionado'); return; }
+  const pr=PRESETS.find(p=>p[0]===STATE.preset);
+  if(STATE.from&&STATE.to) el.textContent=brdate(STATE.from)+' – '+brdate(STATE.to)+(pr?' · '+pr[1]:'');
+  else el.textContent='Selecionar período';
 }
 function applyPreset(id){ const p=PRESETS.find(x=>x[0]===id); if(!p)return; const [f,t]=p[2]();
-  STATE.from=f; STATE.to=t; STATE.preset=id; STATE.selDays.clear(); syncDateInputs(); renderPresets(); renderAll(); }
-function syncDateInputs(){ document.getElementById('dFrom').value=STATE.from||''; document.getElementById('dTo').value=STATE.to||''; }
+  STATE.from=f; STATE.to=t; STATE.preset=id; STATE.selDays.clear(); ppClose(); syncDateInputs(); renderAll(); }
+
+/* ---- popover do seletor de período (estilo Data Studio) ---- */
+const MONTHS_PT=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DOW_PT=['D','S','T','Q','Q','S','S'];
+const PP={from:null,to:null,preset:'',fromView:'',toView:''};
+function ymView(ds){ return (ds||TODAY).slice(0,7); }
+function shiftView(view,delta){ const [y,m]=view.split('-').map(Number); const dt=new Date(y,m-1+delta,1); return dt.getFullYear()+'-'+pad(dt.getMonth()+1); }
+function ppIsOpen(){ const pop=document.getElementById('periodPop'); return pop && !pop.hidden; }
+function ppOpen(){
+  PP.from=STATE.from; PP.to=STATE.to; PP.preset=STATE.selDays.size?'':STATE.preset;
+  PP.fromView=ymView(STATE.from); PP.toView=ymView(STATE.to);
+  document.getElementById('periodPop').hidden=false;
+  document.getElementById('periodBtn').setAttribute('aria-expanded','true');
+  ppRenderAll();
+}
+function ppClose(){ const pop=document.getElementById('periodPop'); if(pop) pop.hidden=true;
+  const b=document.getElementById('periodBtn'); if(b) b.setAttribute('aria-expanded','false'); }
+function ppRenderAll(){ ppRenderPresets(); ppRenderCal('from'); ppRenderCal('to'); ppRenderRange(); }
+function ppRenderPresets(){
+  const host=document.getElementById('ppPresets');
+  host.innerHTML=PRESETS.map(p=>`<button class="pp-preset ${PP.preset===p[0]?'active':''}" data-p="${p[0]}">${p[1]}</button>`).join('');
+  host.querySelectorAll('.pp-preset').forEach(c=>c.addEventListener('click',()=>{
+    const p=PRESETS.find(x=>x[0]===c.dataset.p); const [f,t]=p[2]();
+    PP.from=f; PP.to=t; PP.preset=p[0]; PP.fromView=ymView(f); PP.toView=ymView(t); ppRenderAll();
+  }));
+}
+function ppRenderCal(side){
+  const host=document.getElementById(side==='from'?'ppCalFrom':'ppCalTo');
+  const view=side==='from'?PP.fromView:PP.toView;
+  const [y,m]=view.split('-').map(Number);
+  const startDow=new Date(y,m-1,1).getDay(), dim=new Date(y,m,0).getDate();
+  let cells='';
+  for(let i=0;i<startDow;i++) cells+='<span class="pp-day empty"></span>';
+  for(let d=1;d<=dim;d++){
+    const ds=view+'-'+pad(d);
+    const inR=PP.from&&PP.to&&ds>=PP.from&&ds<=PP.to, isEdge=(ds===PP.from||ds===PP.to);
+    const cls=['pp-day']; if(inR) cls.push('in'); if(ds===PP.from) cls.push('edge-l'); if(ds===PP.to) cls.push('edge-r'); if(isEdge) cls.push('sel');
+    cells+=`<button class="${cls.join(' ')}" data-side="${side}" data-d="${ds}">${d}</button>`;
+  }
+  host.innerHTML=`<div class="pp-cal-head"><span class="pp-cal-title">${side==='from'?'Data de início':'Data de término'}</span></div>
+    <div class="pp-cal-nav"><button class="pp-nav" data-nav="-1">‹</button><span class="pp-cal-month">${MONTHS_PT[m-1]} ${y}</span><button class="pp-nav" data-nav="1">›</button></div>
+    <div class="pp-dow">${DOW_PT.map(x=>`<span>${x}</span>`).join('')}</div>
+    <div class="pp-grid">${cells}</div>`;
+  host.querySelectorAll('.pp-nav').forEach(b=>b.addEventListener('click',()=>{
+    const nv=shiftView(view,+b.dataset.nav); if(side==='from') PP.fromView=nv; else PP.toView=nv; ppRenderCal(side);
+  }));
+  host.querySelectorAll('.pp-day[data-d]').forEach(b=>b.addEventListener('click',()=>ppPickDay(side,b.dataset.d)));
+}
+function ppPickDay(side,ds){
+  PP.preset='';
+  if(side==='from'){ PP.from=ds; if(PP.to&&PP.from>PP.to) PP.to=PP.from; }
+  else { PP.to=ds; if(PP.from&&PP.to<PP.from) PP.from=PP.to; }
+  ppRenderAll();
+}
+function ppRenderRange(){
+  const el=document.getElementById('ppRange');
+  if(PP.from&&PP.to){ const n=Math.round((new Date(PP.to+'T00:00:00')-new Date(PP.from+'T00:00:00'))/86400000)+1;
+    el.textContent=brdate(PP.from)+' – '+brdate(PP.to)+(n>0?' · '+n+(n>1?' dias':' dia'):''); }
+  else el.textContent='Selecione as datas';
+}
+function ppApply(){
+  if(!PP.from||!PP.to){ ppClose(); return; }
+  STATE.from=PP.from; STATE.to=PP.to; STATE.preset=PP.preset||''; STATE.selDays.clear();
+  ppClose(); syncDateInputs(); renderAll();
+}
 
 /* ---------------- navigation & boot ---------------- */
 function setPage(p){ STATE.page=p;
@@ -723,8 +796,13 @@ document.getElementById('themeBtn').addEventListener('click',()=>{ const dark=do
 
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>setPage(n.dataset.page)));
 document.getElementById('taxToggle').addEventListener('click',function(){ STATE.tax=!STATE.tax; this.classList.toggle('on',STATE.tax); renderAll(); });
-document.getElementById('dFrom').addEventListener('change',e=>{ STATE.from=e.target.value; STATE.preset=''; STATE.selDays.clear(); renderPresets(); renderAll(); });
-document.getElementById('dTo').addEventListener('change',e=>{ STATE.to=e.target.value; STATE.preset=''; STATE.selDays.clear(); renderPresets(); renderAll(); });
+/* seletor de período: abre/fecha popover, aplicar/cancelar, fechar ao clicar fora/Esc */
+document.getElementById('periodBtn').addEventListener('click',e=>{ e.stopPropagation(); ppIsOpen()?ppClose():ppOpen(); });
+document.getElementById('ppApply').addEventListener('click',ppApply);
+document.getElementById('ppCancel').addEventListener('click',ppClose);
+document.getElementById('periodPop').addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('click',()=>{ if(ppIsOpen()) ppClose(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&ppIsOpen()) ppClose(); });
 document.getElementById('clearBtn').addEventListener('click',()=>{ STATE.mSelC.clear();STATE.mSelA.clear();STATE.mSelAd.clear();STATE.selDays.clear(); applyPreset('mes'); });
 document.getElementById('refreshBtn').addEventListener('click',function(){ this.classList.add('loading'); location.href=location.pathname+'?t='+Date.now()+location.hash; });
 
@@ -753,7 +831,7 @@ document.getElementById('updated').innerHTML='Última atualização:<br>'+B.gene
 document.getElementById('buildFoot').textContent='build __BUILD_ID__';
 document.getElementById('buildFoot2').textContent='· build __BUILD_ID__';
 
-syncDateInputs(); renderPresets(); iaStatusText();
+syncDateInputs(); iaStatusText();
 document.getElementById('taxToggle').classList.toggle('on', STATE.tax);  /* imposto Meta ON por padrão */
 setPage(location.hash==='#meta'?'meta':(location.hash==='#rel'?'rel':(location.hash==='#ia'?'ia':'geral')));
 

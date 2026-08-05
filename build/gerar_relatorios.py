@@ -148,6 +148,26 @@ def by_dim(meta, sales, a, b, dim):
     return mp
 
 
+def by_ad_full(meta, sales, a, b):
+    # Agrupa por (campanha, conjunto, anúncio) — não só pelo nome do anúncio.
+    # O mesmo nome de anúncio (ex. "AD01") se repete em campanhas diferentes
+    # (ver CLAUDE.md); agregar só por "ad" misturaria criativos distintos sob
+    # o mesmo rótulo. A chave espelha o par campanha+anúncio usado na
+    # atribuição em build.process (ad_map).
+    mp = {}
+    for m in meta:
+        if in_range(m["d"], a, b):
+            key = (m["camp"], m["adset"], m["ad"])
+            mp.setdefault(key, new_bucket())
+            add_meta(mp[key], m)
+    for s in sales:
+        if in_range(s["d"], a, b) and s["meta"]:
+            key = (s["camp"], s["adset"], s["ad"])
+            mp.setdefault(key, new_bucket())
+            add_sale(mp[key], s)
+    return mp
+
+
 def r(v, p=4):
     return None if v is None else round(v, p)
 
@@ -164,17 +184,18 @@ def period_metrics(meta, sales, a, b, tax):
         d = derive(bk, tax)
         camps.append({"nome": name, **pack(d)})
     ads = []
-    for name, bk in by_dim(meta, sales, a, b, "ad").items():
+    for (camp, adset, name), bk in by_ad_full(meta, sales, a, b).items():
         if bk["sp"] <= 0:
             continue
         d = derive(bk, tax)
-        ads.append({"nome": name, "gasto": r(d["gasto"], 2), "vendas": d["vendas"],
+        ads.append({"nome": name, "campanha": camp, "conjunto": adset,
+                    "gasto": r(d["gasto"], 2), "vendas": d["vendas"],
                     "cac": r(d["cac"], 2), "roas": r(d["roas"], 2)})
     ads.sort(key=lambda x: (-(x["roas"] if x["roas"] is not None else -1),
                             x["cac"] if x["cac"] is not None else 9e9))
     top = ads[:5]
-    top_names = {x["nome"] for x in top}
-    worst = [x for x in ads if x["nome"] not in top_names][-5:][::-1]
+    top_keys = {(x["nome"], x["campanha"], x["conjunto"]) for x in top}
+    worst = [x for x in ads if (x["nome"], x["campanha"], x["conjunto"]) not in top_keys][-5:][::-1]
     return {"de": a, "ate": b, "total": pack(dT), "ads": pack(dA),
             "campanhas": camps, "top_anuncios": top, "piores_anuncios": worst}
 

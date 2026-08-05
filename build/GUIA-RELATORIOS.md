@@ -39,7 +39,13 @@
 3. `build/relatorios_metrics.json` traz os números de todos os períodos
    (`hoje, ontem, 3d, 7d, 14d, 30d, mes, mespass, todo`) — isso NÃO é texto,
    só matemática (gerada por `build/gerar_relatorios.py`, que reaproveita
-   `build.process` — mesma fonte de verdade do site).
+   `build.process` — mesma fonte de verdade do site). Cada item de
+   `top_anuncios`/`piores_anuncios` traz `nome` (ex. "AD07") **junto com**
+   `campanha` e `conjunto` — o nome do anúncio sozinho **não é único**: o
+   mesmo `nome` pode aparecer em campanhas diferentes (ver CLAUDE.md, seção
+   "Produto principal / atribuição"). **Sempre cite a campanha (e o
+   conjunto, quando ajudar) ao lado do nome do anúncio no texto** — nunca
+   escreva só "AD07 converteu bem" sem dizer em qual campanha/conjunto.
 4. **Migrar hoje → ontem, depois redigir os 9 briefings do zero.**
    - Leia o `build/relatorios.json` **atual** antes de sobrescrever.
    - Copie o `html` que está em `periodos.hoje` para dentro de `periodos.ontem`
@@ -122,7 +128,10 @@ anúncio, usando sempre uma das 4 tags abaixo:
 - **`Observar`** — dado insuficiente (pouco gasto/tempo de vida) ou oscilação
   normal de tráfego frio: aguardar mais dias antes de agir.
 
-Não invente números que não estejam no metrics JSON.
+Não invente números que não estejam no metrics JSON. Ao citar um anúncio (ex.
+"AD07"), **sempre** diga também a campanha (e o conjunto, se relevante) — o
+nome do anúncio sozinho não identifica a estrutura, já que o mesmo nome pode
+rodar em campanhas diferentes.
 
 ## Formato de `build/relatorios.json`
 

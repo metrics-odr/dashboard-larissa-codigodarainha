@@ -2,13 +2,18 @@ name: Gerar Métricas dos Relatórios
 
 # Calcula (só matemática, sem IA) as métricas por período usadas pelo
 # Briefing do Gestor e commita build/relatorios_metrics.json na main.
-# Roda ~9 min antes da Routine do Claude Code (23:59 BRT) que lê esse
-# arquivo e redige os textos — o runner do GitHub Actions alcança o
-# Google Sheets (docs.google.com), o que o sandbox do agente não alcança.
+# Roda ~9 min antes da automação do Codex ou Routine do Claude Code (23:59
+# BRT), que lê esse arquivo e redige os textos. O push deste próprio workflow
+# força uma geração imediata quando a configuração do Actions é reativada.
+# O runner alcança o Google Sheets; o sandbox do agente não alcança.
 on:
   workflow_dispatch:
   schedule:
     - cron: "50 2 * * *"  # 23:50 BRT (backup nativo; pode atrasar minutos)
+  push:
+    branches: [ main ]
+    paths:
+      - ".github/workflows/gerar-relatorios-metrics.yml"
 
 permissions:
   contents: write

@@ -3,6 +3,9 @@
 > Este repositório é um **template**. Antes de usar, siga o **CHECKLIST DE NOVO
 > CLIENTE** no topo do `CLAUDE.md`.
 
+Compatível com **Claude Code e Codex**: Claude lê `CLAUDE.md`; Codex lê
+`AGENTS.md`. A configuração do agendamento no Codex está em `SETUP-CODEX.md`.
+
 Dashboard de BI estática (HTML/CSS/JS + Chart.js) publicada no **GitHub Pages**,
 atualizada a cada ~30 min (GitHub Actions + cron-job.org), **somente leitura** das
 planilhas. Funil **VSL / tráfego direto** cruzando **Meta Ads × Compradores**.
@@ -61,6 +64,8 @@ tabelas com ordenação/redimensionamento/multi-seleção, cache-bust.
 - `ia-worker/wrangler.toml` — nome do Worker (preencher por cliente).
 - `GUIA-REPLICACAO.md` — arquitetura, CSS/JS e solução dos problemas de publicação.
 - `CLAUDE.md` — contexto do projeto + checklist de novo cliente.
+- `AGENTS.md` — contexto e regras equivalentes para o Codex.
+- `SETUP-CODEX.md` — automação agendada dos briefings no Codex.
 - `SETUP-CRON.md` — configuração do cron-job.org.
 - `SETUP-IA.md` — configuração da aba IA Insights (Cloudflare Worker).
 

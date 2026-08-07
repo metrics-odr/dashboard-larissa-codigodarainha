@@ -1,6 +1,7 @@
 name: Build & Deploy Dashboard
 
-# Dispara de 3 formas:
+# Dispara de 3 formas. O push deste próprio arquivo também força uma execução,
+# útil para reativar/re-registrar o agendamento sem depender do cron externo:
 #  - workflow_dispatch : chamado pelo cron-job.org a cada 30 min (via API do GitHub)
 #  - schedule          : backup nativo (o agendador do GitHub costuma atrasar; o
 #                        cron-job.org e a fonte principal de pontualidade)
@@ -8,7 +9,7 @@ name: Build & Deploy Dashboard
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0,30 * * * *"
   push:
     branches: [ main ]
     paths:
@@ -21,10 +22,12 @@ permissions:
   pages: write
   id-token: write
 
-# Nunca roda dois deploys ao mesmo tempo; nao cancela um deploy em andamento
+# Publica somente a execução mais recente. Se o botão, cron-job.org e o schedule
+# dispararem juntos, cancela o deploy antigo em vez de deixar uma fila de Pages
+# que acaba cancelando a atualização manual como "higher priority waiting request".
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-deploy:

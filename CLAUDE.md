@@ -4,6 +4,8 @@
 > Repositório **já configurado** para o cliente **Larissa Topper** (funil VSL
 > Código da Rainha). A engine (`build/template.html`, `ia-worker/worker.js`) é
 > genérica; os valores do cliente ficam em `build/build.py`.
+> O Codex usa o contexto complementar em `AGENTS.md`; a automação equivalente
+> às Routines está documentada em `SETUP-CODEX.md`.
 
 ---
 
@@ -194,7 +196,9 @@ o Google Sheets, só o runner do GitHub Actions — ver "problemas conhecidos" #
 `build/relatorios_metrics.json` (só números); **23:59 BRT** uma **Routine do
 Claude Code** lê esse arquivo, migra o texto que estava em "hoje" para "ontem" e
 redige os 9 briefings do zero seguindo `build/GUIA-RELATORIOS.md`, commitando
-`relatorios.json`. Rodar no fim do dia (não de manhã) garante que "hoje" seja
+`relatorios.json`. Essa etapa pode ser executada por uma automação do **Codex**
+ou pela Routine do Claude Code. Rodar no fim do dia (não de manhã) garante
+que "hoje" seja
 analisado com o dia quase completo. Se o JSON não existir, a aba mostra tudo
 menos o briefing (cards/tabelas seguem funcionando).
 

@@ -1,10 +1,11 @@
 # GUIA — Geração diária dos Briefings do Gestor (aba Relatórios)
 
-> Lido pela **Routine diária (23h59 BRT)** do Claude Code que regenera
+> Lido pela **automação diária (23h59 BRT)** do Codex ou pela Routine do
+> Claude Code que regenera
 > `build/relatorios.json`. **Não usa a API paga da Anthropic** — roda na
-> assinatura do Claude Code (sem consumir créditos). Toda a matemática vem de
+> execução da ferramenta escolhida (sem consumir créditos da API Anthropic). Toda a matemática vem de
 > `build/gerar_relatorios.py`, rodado pelo **GitHub Actions** (não pela
-> Routine — o sandbox do agente não alcança o Google Sheets); o Claude só
+> automação — o sandbox do agente não alcança o Google Sheets); o agente só
 > **redige os textos**.
 >
 > **Por que 23h59 e não de manhã:** rodando no fim do dia, o período "hoje"
@@ -13,7 +14,7 @@
 > ontem à noite, já com o dia completo) vira o novo "ontem"; e escreve um
 > "hoje" novo do zero para o dia que acabou de fechar. Ver passo 4.
 
-## O que a Routine faz (passo a passo)
+## O que a automação faz (passo a passo)
 
 > **Arquitetura em 2 etapas** (o sandbox do agente não alcança
 > `docs.google.com`, só o runner do GitHub Actions alcança — ver CLAUDE.md,
@@ -23,7 +24,8 @@
 >    planilhas (`python build/gerar_relatorios.py`, sem argumentos = busca ao
 >    vivo) e commita `build/relatorios_metrics.json` na `main`. **Só números,
 >    sem IA.**
-> 2. A Routine do Claude Code (23:59 BRT) só precisa dar **pull** na `main`
+> 2. A automação do Codex ou Routine do Claude Code (23:59 BRT) só precisa
+>    dar **pull** na `main`
 >    para já ter esse arquivo pronto — não baixa planilha nem roda script.
 
 1. **Checkout / pull** da branch de produção (`main`) já atualizada.

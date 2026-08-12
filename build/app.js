@@ -229,23 +229,26 @@ function hbar(id, items, valFn, color, top, fmtFn){
 }
 /* CAC por dia, por item de uma dimensão (campanha/conjunto/anúncio) - 1 linha por item.
    `dim` = 'camp' | 'adset' | 'ad'; usa os mesmos dados escopados da tabela acima. */
-function cacDimChart(id, fM, fS, dim){
+function cacDimChart(id, fM, fS, dim, selSet){
   destroy(id); const el=document.getElementById(id); if(!el) return;
   const spendTot={}; fM.forEach(r=>spendTot[r[dim]]=(spendTot[r[dim]]||0)+r.sp);
-  const items=Object.keys(spendTot).sort((a,b)=>spendTot[b]-spendTot[a]).slice(0,6);
+  const items=(selSet&&selSet.size)
+    ? Object.keys(spendTot).filter(k=>selSet.has(k)).sort((a,b)=>spendTot[b]-spendTot[a])
+    : Object.keys(spendTot).sort((a,b)=>spendTot[b]-spendTot[a]).slice(0,6);
   const dset=new Set(); fM.forEach(r=>r.d&&dset.add(r.d)); fS.forEach(r=>r.d&&dset.add(r.d));
   const days=[...dset].sort();
   const K=(c,dd)=>c+'\u0001'+dd, sp={}, vd={};
   fM.forEach(r=>{if(!r.d)return; sp[K(r[dim],r.d)]=(sp[K(r[dim],r.d)]||0)+r.sp;});
   fS.forEach(r=>{if(!r.d)return; vd[K(r[dim],r.d)]=(vd[K(r[dim],r.d)]||0)+r.main;});
   const PAL=chartPalette();
-  const ds=items.map((c,i)=>({label:c.length>22?c.slice(0,22)+'…':c,
+  const ds=items.map((c,i)=>({label:c.length>22?c.slice(0,22)+'\u2026':c, _full:c,
     data:days.map(dd=>{const s=(sp[K(c,dd)]||0)*taxf(), v=vd[K(c,dd)]||0; return v?+(s/v).toFixed(2):null;}),
     borderColor:PAL[i%PAL.length],backgroundColor:PAL[i%PAL.length],borderWidth:2,pointRadius:1.5,spanGaps:true,tension:.25}));
   const mut=cmuted();
   charts[id]=new Chart(el,{type:'line',data:{labels:days.map(x=>x.slice(5)),datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
-      plugins:{legend:{labels:{color:cink(),boxWidth:8,font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+brl(c.raw)}}},
+      plugins:{legend:{labels:{color:cink(),boxWidth:8,font:{size:9}}},
+        tooltip:{callbacks:{label:c=>(c.dataset._full||c.dataset.label)+': '+brl(c.raw)}}},
       scales:{x:{ticks:{color:mut,font:{size:9},maxRotation:0,autoSkip:true,autoSkipPadding:8},grid:{display:false}},y:{ticks:{color:mut,font:{size:9},callback:v=>brl(v)},grid:{color:cgrid()},beginAtZero:true}}}});
 }
 
@@ -414,10 +417,12 @@ function renderMeta(){
   renderTable({id:'tAd', cols:HCOLS.map((c,i)=>i===0?{...c,label:'Anúncio'}:c), rows:hierRows(buildAgg(Sd.fS,Sd.fM,'ad')), total:totRowOf(totals(Sd.fS,Sd.fM)),
     selectable:true, selSet:STATE.mSelAd, onSelect:(k,e)=>selDim('D',k,e&&(e.ctrlKey||e.metaKey))});
 
-  /* cada gráfico segue a dimensão da tabela acima (mesmos dados escopados) */
-  cacDimChart('chCamp', Sc.fM, Sc.fS, 'camp');
-  cacDimChart('chAdset', Sa.fM, Sa.fS, 'adset');
-  cacDimChart('chAd', Sd.fM, Sd.fS, 'ad');
+  /* cada gráfico segue a dimensão da tabela acima (mesmos dados escopados);
+     quando a própria dimensão tem seleção (clique na tabela), o gráfico mostra
+     só as linhas selecionadas — senão cai no top-6 por gasto dentro do escopo herdado. */
+  cacDimChart('chCamp', Sc.fM, Sc.fS, 'camp', STATE.mSelC);
+  cacDimChart('chAdset', Sa.fM, Sa.fS, 'adset', STATE.mSelA);
+  cacDimChart('chAd', Sd.fM, Sd.fS, 'ad', STATE.mSelAd);
 
   const vendas=fS.reduce((s,r)=>s+r.main,0);
   document.getElementById('qCount').textContent=vendas+' vendas · '+fS.length+' linhas';
